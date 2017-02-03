@@ -1,85 +1,83 @@
 'use strict';
  
-App.controller('AppController', ['$scope', 'UserService', function($scope, UserService) {
+App.controller('AppController', ['$scope', 'SimpleObjectService', function($scope, SimpleObjectService) {
           var self = this;
-          self.user={id:null,username:'',address:'',email:''};
-          self.users=[];
-               
-          self.fetchAllUsers = function(){
-              UserService.fetchAllUsers()
+          self.simpleObject={pkSimpleObject:null,name:''};
+          self.simpleObjects=[];
+          
+          self.fetchAll = function(){
+              SimpleObjectService.fecthAllSimpleObjects()
                   .then(
-                               function(d) {
-                                    self.users = d;
-                               },
-                                function(errResponse){
-                                    console.error('Error while fetching Currencies');
-                                }
-                       );
+                       function(d) {
+                            self.simpleObjects = d;
+                       },
+                        function(errResponse){
+                            console.error('Error while fetching Currencies');
+                        }
+                   );
           };
             
-          self.createUser = function(user){
-              UserService.createUser(user)
+          self.create = function(simpleObject){
+              SimpleObjectService.createSimpleObject(simpleObject)
                       .then(
-                      self.fetchAllUsers, 
+                      self.fetchAll, 
                               function(errResponse){
-                                   console.error('Error while creating User.');
+                                   console.error('Error while creating SimpleObject.');
                               } 
                   );
           };
  
-         self.updateUser = function(user, id){
-              UserService.updateUser(user, id)
+         self.update = function(simpleObject, id){
+              SimpleObjectService.updateSimpleObject(simpleObject, id)
                       .then(
-                              self.fetchAllUsers, 
+                              self.fetchAll, 
                               function(errResponse){
-                                   console.error('Error while updating User.');
+                                   console.error('Error while updating SimpleObject.');
                               } 
                   );
           };
  
-         self.deleteUser = function(id){
-              UserService.deleteUser(id)
+         self.deleteObj = function(id){
+              SimpleObjectService.deleteSimpleObject(id)
                       .then(
-                              self.fetchAllUsers, 
+                              self.fetchAll, 
                               function(errResponse){
-                                   console.error('Error while deleting User.');
+                                   console.error('Error while deleting SimpleObject.');
                               } 
                   );
           };
  
-          self.fetchAllUsers();
+          self.fetchAll();
  
           self.submit = function() {
-              if(self.user.id===null){
-                  console.log('Saving New User', self.user);    
-                  self.createUser(self.user);
+              if(self.simpleObject.pkSimpleObject===null){
+                  self.simpleObject.typeLookup = {'pkLookup' : 1};
+                  self.create(self.simpleObject);
               }else{
-                  self.updateUser(self.user, self.user.id);
-                  console.log('User updated with id ', self.user.id);
+                  self.update(self.simpleObject, self.simpleObject.pkSimpleObject);
+                  console.log('SimpleObject updated with pkSimpleObject ', self.simpleObject.pkSimpleObject);
               }
               self.reset();
           };
                
-          self.edit = function(id){
-              console.log('id to be edited', id);
-              for(var i = 0; i < self.users.length; i++){
-                  if(self.users[i].id === id) {
-                     self.user = angular.copy(self.users[i]);
+          self.edit = function(pkSimpleObject){
+              for(var i = 0; i < self.simpleObjects.length; i++){
+                  if(self.simpleObjects[i].pkSimpleObject === pkSimpleObject) {
+                     self.simpleObject = angular.copy(self.simpleObjects[i]);
                      break;
                   }
               }
           }
                
           self.remove = function(id){
-              console.log('id to be deleted', id);
-              if(self.user.id === id) {//clean the form if the user to be deleted is shown there.
+              if(self.simpleObject.id === id) {
                   self.reset();
               }
-              self.deleteUser(id);
+              self.deleteObj(id);
           }
  
           self.reset = function(){
-              self.user={id:null,username:'',address:'',email:''};
+              self.simpleObject={pkSimpleObject:null,name:''};
               $scope.myForm.$setPristine(); //reset Form
           }
  

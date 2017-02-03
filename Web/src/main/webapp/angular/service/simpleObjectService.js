@@ -1,61 +1,63 @@
 'use strict';
  
-App.factory('UserService', ['$http', '$q', function($http, $q){
- 
+App.factory('SimpleObjectService', ['$http', '$q', function($http, $q){
+    var sURL = 'http://localhost:8080/ApplicationService/simpleObject';
+    
     return {
          
-    fetchAllUsers: function() {
-            return $http.get('http://localhost:8080/SpringMVC4RestAPI/user/')
+    fecthAllSimpleObjects: function() {
+            return $http.get(sURL + '/listAll')
             .then(
                     function(response){
                         return response.data;
                     }, 
                     function(errResponse){
-                        console.error('Error while fetching users');
+                        console.error('Error while fetching SimpleObjects');
                         return $q.reject(errResponse);
                     }
             );
         },
      
-    createUser: function(user){
-            return $http.post('http://localhost:8080/SpringMVC4RestAPI/user/', user)
+    createSimpleObject: function(simpleObject){
+            return $http.post(sURL + '/create', simpleObject)
             .then(
                     function(response){
                         return response.data;
                     }, 
                     function(errResponse){
-                        console.error('Error while creating user');
+                        console.error('Error while creating SimpleObjects');
                         return $q.reject(errResponse);
                     }
             );
         },
      
-    updateUser: function(user, id){
-            return $http.put('http://localhost:8080/SpringMVC4RestAPI/user/'+id, user)
+        updateSimpleObject: function(simpleObject, id){
+        	console.log(simpleObject);
+            return $http.put(sURL + '/update', simpleObject)
             .then(
                     function(response){
                         return response.data;
                     }, 
                     function(errResponse){
-                        console.error('Error while updating user');
+                        console.error('Error while updating SimpleObjects');
                         return $q.reject(errResponse);
                     }
             );
         },
      
-   deleteUser: function(id){
-            return $http.delete('http://localhost:8080/SpringMVC4RestAPI/user/'+id)
+        deleteSimpleObject: function(id){
+            return $http.delete(sURL+"/delete?objectPKs="+id)
             .then(
                     function(response){
                         return response.data;
                     }, 
                     function(errResponse){
-                        console.error('Error while deleting user');
+                        console.error('Error while deleting SimpleObjects');
                         return $q.reject(errResponse);
                     }
             );
         }
-         
+        
     };
  
 }]);
