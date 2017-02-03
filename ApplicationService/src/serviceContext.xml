@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:aop="http://www.springframework.org/schema/aop"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="location">
+	       <value>file:/project/simpleRestFramework/application.properties</value>
+	    </property>
+	</bean>
+	
+	<bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+   		<property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
+   		<property name="targetMethod" value="initLogging" />
+   		<property name="arguments">
+      		<list>
+         		<value>${app.log.config}</value>
+      		</list>
+   		</property>
+	</bean>
+	
+	<bean id="sharedFolderLocationInitialisation" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+   		<property name="targetClass" value="id.base.app.SystemConstant" />
+   		<property name="targetMethod" value="setSharedFolderLocation" />
+   		<property name="arguments">
+      		<list>
+      			<value>${shared.folder}</value>
+      		</list>
+   		</property>
+	</bean>
+
+   	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+        <property name="jpaDialect" ref="jpaDialect" />
+        <property name="packagesToScan">
+        	<list>
+        		<value>id.base.app.valueobject</value>
+        	</list>
+        </property>
+		
+        <property name="jpaProperties">
+        	<props>
+        		<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="use_sql_comments">true</prop>
+				<prop key="org.hibernate.type">true</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
+				<prop key="hibernate.ejb.metamodel.generation">disabled</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+				<prop key="hibernate.jdbc.batch_size">100</prop>
+				<prop key="hibernate.ejb.interceptor">id.base.app.AuditEntityInterceptor</prop>
+        	</props>
+        </property>
+		
+    </bean>
+
+    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="database" value="HSQL" />
+        <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
+    </bean>
+
+    <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaDialect" ref="jpaDialect" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    
+	<!-- Activate annotation configured components -->
+	<context:annotation-config />
+	
+	<!-- Scan components for annotations within the configured package -->
+	
+	<context:component-scan base-package="id.base.app" />
+	 
+    <aop:aspectj-autoproxy/>
+	
+	<bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator" />
+
+	<!-- start mail -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+         <property name="host" value="smtp.gmail.com"/>
+         <property name="port" value="587" />
+         <property name="username" value="mailAddress"/>
+         <property name="password" value="mailPassword"/>
+         <property name="javaMailProperties">
+		    <props>
+		    	<prop key="mail.transport.protocol">smtp</prop>
+		        <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.smtp.quitwait">false</prop>
+                <prop key="mail.debug">true</prop>
+		    </props>
+    	</property>
+    </bean>
+	
+	<bean id="digesterConfig" class="org.jasypt.digest.config.SimpleDigesterConfig">
+		<property name="algorithm">
+			<value>MD5</value>
+		</property>
+		<property name="iterations">
+			<value>1</value>
+		</property>
+		<property name="saltGenerator">
+			<ref bean="saltGenerator"/>
+		</property>
+		<property name="saltSizeBytes">
+			<value>20</value>
+		</property>
+	</bean>
+	
+	<bean id="jasyptDigester" class="org.jasypt.digest.StandardStringDigester">
+		<property name="config">
+			<ref bean="digesterConfig"/>
+		</property>
+	</bean>
+	
+	<bean id="saltGenerator" class="org.jasypt.salt.FixedStringSaltGenerator">
+		<property name="salt">
+			<value>***base***</value>
+		</property>
+	</bean>
+
+</beans>

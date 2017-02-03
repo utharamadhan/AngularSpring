@@ -1,0 +1,5 @@
+/build/
+/target/
+/AVIVA/
+*.class
+rebel.xml

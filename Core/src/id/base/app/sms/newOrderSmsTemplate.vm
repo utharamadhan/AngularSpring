@@ -1,0 +1,7 @@
+Kepada $obj.destination.name,
+
+Mohon Order dengan Nomor $obj.object[0].orderNo - $obj.object[0].orderElementNo dieksekusi.
+
+Terima kasih.
+
+SYSTEM
