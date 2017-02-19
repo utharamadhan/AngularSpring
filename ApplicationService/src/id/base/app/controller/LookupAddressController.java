@@ -80,7 +80,7 @@ public class LookupAddressController extends SuperController<LookupAddress>{
 	public LookupAddress validate(LookupAddress anObject){
 		List<ErrorHolder> errorHolders = new ArrayList<ErrorHolder>();
 		if(StringFunction.isEmpty(anObject.getName())){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.lookup.name.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("error.lookup.name.mandatory", null, Locale.ENGLISH)));
 		}
 		if(errorHolders.size()>0){
 			throw new SystemException(errorHolders);

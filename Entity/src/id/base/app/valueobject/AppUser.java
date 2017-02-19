@@ -42,7 +42,6 @@ public class AppUser extends BaseEntity implements Serializable {
 	
 	public static final String PK_APP_USER = "pkAppUser" ;
 	public static final String USER_TYPE = "userType" ;
-	public static final String USER_NAME = "userName" ;
 	public static final String EMAIL = "email" ;
 	public static final String APP_ROLE = "appRole" ;
 	public static final String APP_ROLE_NAME = "appRole.name" ;
@@ -77,9 +76,6 @@ public class AppUser extends BaseEntity implements Serializable {
 	
 	@Column(name="USER_TYPE")
     private Integer userType;
-	
-	@Column(name = "USER_NAME")
-	private String userName;
 	
 	@Column(name="EMAIL")
     private String email;
@@ -159,14 +155,6 @@ public class AppUser extends BaseEntity implements Serializable {
 
 	public void setUserType(Integer userType) {
 		this.userType = userType;
-	}
-	
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	public String getEmail() {

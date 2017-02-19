@@ -35,7 +35,7 @@ public class BasicExceptionHandler extends ResponseEntityExceptionHandler {
         List<FieldError> fieldErrors = ire.getErrors().getFieldErrors();
         for (FieldError fieldError : fieldErrors) {
         	LOGGER.error(fieldError.getDefaultMessage());
-            errorHolders.add(new ErrorHolder(fieldError.getDefaultMessage()));
+            errorHolders.add(ErrorHolder.newInstance("errorCode", fieldError.getDefaultMessage()));
         }
 
         HttpHeaders headers = new HttpHeaders();

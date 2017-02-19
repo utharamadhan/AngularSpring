@@ -146,7 +146,7 @@ public class ConstraintViolationExceptionHandler extends ResponseEntityException
 		ConstraintViolationException cve = (ConstraintViolationException) e;
 		List<ErrorHolder> errorHolders = new LinkedList<ErrorHolder>();
 		LOGGER.error("RuntimeError {}", e);
-		errorHolders.add(new ErrorHolder(messageSource.getMessage(getConstraintErrorMessage(cve.getConstraintName()),null,Locale.ENGLISH)));
+		errorHolders.add(ErrorHolder.newInstance("errorCode", getConstraintErrorMessage(cve.getConstraintName())));
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

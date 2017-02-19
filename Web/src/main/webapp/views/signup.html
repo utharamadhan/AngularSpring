@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="header">
+	     <div class="container">
+	        <div class="row">
+	           <div class="col-md-9">
+	              <!-- Logo -->
+	              <div class="logo">
+	                 <h1><a href="#!/login"><img src="./img/rr-logo-white.png" style="width:35px;"></img></a></h1>
+	              </div>
+	           </div>
+	           <div class="col-md-3">
+	              <div class="back-to-login">	              
+              		<!-- Back to Login -->
+              		<a href="#" href="#!/login">Have an account? Log in to <img src="./img/rr-logo-white.png" style="width: 25px;"/></a>
+	              </div>
+	           </div>
+	        </div>
+	     </div>
+	</div>
+	<div class="page-content container" ng-controller="SignUpController">
+		<div class="row">
+			<div class="col-md-5 col-md-offset-7">
+				<div class="login-wrapper">
+			        <div class="box">
+			            <div class="content-wrap">
+			                <h6>Join <img src="./img/rr-logo.png" style="width: 70px;"/>today.</h6>
+	                        <form action="#" name="signupForm">
+				                <input name="email" class="form-control" type="text" placeholder="E-mail address" ng-model="user.email" required>
+			                	<span ng-show="showError && signupForm.email.$invalid">Email is required.</span>
+			                	<input name="password" class="form-control" type="password" placeholder="Password" ng-model="user.password" required>
+			                	<span ng-show="showError && signupForm.password.$invalid">Password is required.</span>
+			                	<input name="confirmationPassword" class="form-control" type="password" placeholder="Confirm Password" ng-model="confirmationPassword" required>
+				                <span ng-show="showError && signupForm.confirmationPassword.$invalid">Confirmation Password is required.</span>
+				                <div class="action">
+				                    <a class="btn btn-primary signup" ng-click="submitRegister(signupForm.$valid)">Register</a>
+				                </div>
+			                </form>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

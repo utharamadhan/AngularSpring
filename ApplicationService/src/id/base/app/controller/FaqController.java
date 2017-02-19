@@ -30,10 +30,10 @@ public class FaqController extends SuperController<Faq>{
 	public Faq validate(Faq anObject) throws SystemException {
 		List<ErrorHolder> errors = new ArrayList<>();
 		if(anObject.getQuestion() == null){
-			errors.add(new ErrorHolder("Question is Mandatory"));
+			errors.add(ErrorHolder.newInstance("errorCode", "Question is Mandatory"));
 		}
 		if(anObject.getAnswer() == null){
-			errors.add(new ErrorHolder("Answer is Mandatory"));
+			errors.add(ErrorHolder.newInstance("errorCode", "Answer is Mandatory"));
 		}
 		if(errors != null && errors.size() > 0){
 			throw new SystemException(errors);

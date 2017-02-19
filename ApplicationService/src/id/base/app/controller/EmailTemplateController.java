@@ -29,10 +29,10 @@ public class EmailTemplateController extends SuperController<EmailTemplate>{
 	public EmailTemplate validate(EmailTemplate anObject) throws SystemException {
 		List<ErrorHolder> errors = new ArrayList<>();
 		if(anObject.getCode() == null){
-			errors.add(new ErrorHolder("Name is Mandatory"));
+			errors.add(ErrorHolder.newInstance("errorCode", "Code is Mandatory"));
 		}
 		if(anObject.getTemplate() == null){
-			errors.add(new ErrorHolder("Content is Mandatory"));
+			errors.add(ErrorHolder.newInstance("errorCode", "Content is Mandatory"));
 		}
 		if(errors != null && errors.size() > 0){
 			throw new SystemException(errors);

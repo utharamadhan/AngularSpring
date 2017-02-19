@@ -1,6 +1,7 @@
 package id.base.app.validation;
 
 import id.base.app.exception.ErrorHolder;
+import id.base.app.exception.ErrorWrapper;
 import id.base.app.exception.SystemException;
 
 import java.util.LinkedList;
@@ -35,8 +36,7 @@ public class SystemExceptionHandler extends ResponseEntityExceptionHandler {
 	private ResourceBundleMessageSource messageSource;
 
 	@ExceptionHandler({ SystemException.class })
-	protected ResponseEntity<Object> handleInvalidRequest(RuntimeException e,
-			WebRequest request) throws JsonProcessingException {
+	protected ResponseEntity<Object> handleInvalidRequest(RuntimeException e, WebRequest request) throws JsonProcessingException {
 		SystemException se = (SystemException) e;
 		List<ErrorHolder> errorHolders = new LinkedList<ErrorHolder>();
 
@@ -48,7 +48,6 @@ public class SystemExceptionHandler extends ResponseEntityExceptionHandler {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		return handleExceptionInternal(e, errorHolders, headers,
-				HttpStatus.BAD_REQUEST, request);
+		return handleExceptionInternal(e, ErrorWrapper.getInstance(errorHolders), headers, HttpStatus.BAD_REQUEST, request);
 	}
 }

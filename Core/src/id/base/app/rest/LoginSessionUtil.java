@@ -26,13 +26,13 @@ public class LoginSessionUtil {
         HttpSession session = request.getSession();
         if (null == session) {
             logger.info("Empty HTTP Session");
-            throw new SystemException(new ErrorHolder("error.session.invalidated"));
+            throw new SystemException(ErrorHolder.newInstance("errorCode", "error.session.invalidated"));
         }
 
         LoginSession loginSession = (LoginSession) session.getAttribute(SystemConstant.USER_OBJECT_KEY);
         if (null == loginSession) {
             logger.info("Empty Login Session");
-            throw new SystemException(new ErrorHolder("error.session.expired"));
+            throw new SystemException(ErrorHolder.newInstance("errorCode", "error.session.expired"));
         }
         return loginSession;
     }

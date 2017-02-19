@@ -93,7 +93,7 @@ public class AppRoleController extends SuperController<AppRole>{
 			return service.findAllByFilter(filter, order);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new SystemException(new ErrorHolder("error finding your data"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error finding your data"));
 		}
 	}
 	
@@ -175,13 +175,13 @@ public class AppRoleController extends SuperController<AppRole>{
 	public AppRole validate(AppRole anObject) throws SystemException {
 		List<ErrorHolder> errorHolders = new ArrayList<ErrorHolder>();
 		if(StringFunction.isEmpty(anObject.getCode())){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.code.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("error.message.user.role.code.mandatory", messageSource.getMessage("error.message.user.role.code.mandatory", null, Locale.ENGLISH)));
 		}
 		if(StringFunction.isEmpty(anObject.getName())){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.name.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("error.message.user.role.name.mandatory", messageSource.getMessage("error.message.user.role.name.mandatory", null, Locale.ENGLISH)));
 		}
 		if(anObject.getType() == null || anObject.getType() == 0){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.type.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("error.message.user.role.type.mandatory", messageSource.getMessage("error.message.user.role.type.mandatory", null, Locale.ENGLISH)));
 		}
 		if(errorHolders.size()>0){
 			throw new SystemException(errorHolders);

@@ -57,7 +57,7 @@ public class VelocityTemplateMailManager<T> implements MailManager<T>  {
  	      this.mailSender.send(preparator);
    	 	} catch (Exception e) {
    	 		logger.error(e.getMessage(),e);
-   	 		throw new SystemException(new ErrorHolder("error.email.access"));
+   	 		throw new SystemException(ErrorHolder.newInstance("errorCode", "error.email.access"));
   		}
     }
     
@@ -117,7 +117,7 @@ public class VelocityTemplateMailManager<T> implements MailManager<T>  {
    	 		logger.error(e.getMessage(),e);
    	 		
    	 		if (throwException) {
-   	 			throw new SystemException(new ErrorHolder("error.email.access"));
+   	 			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.email.access"));
    	 		}
   		}
 		

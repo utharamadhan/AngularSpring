@@ -2,7 +2,6 @@ package id.base.app.service.passwordhistory;
 
 import id.base.app.SystemParameter;
 import id.base.app.dao.passwordhistory.IPasswordHistoryDAO;
-import id.base.app.exception.ErrorHolder;
 import id.base.app.exception.SystemException;
 import id.base.app.util.DateTimeFunction;
 import id.base.app.valueobject.PasswordHistory;
@@ -23,7 +22,7 @@ public class PasswordHistoryService implements IPasswordHistoryService{
 		if( isPasswordExistHistory(password, fkAppUser) ){
 			List<PasswordHistory> listPasshist=historyDao.getTotalPasswordByPasswordAndfkAppuser(digestedPassword, fkAppUser);
 			if (listPasshist.size()>=SystemParameter.MAX_PASSWORD_HISTORY_CHECK) {
-				throw new SystemException(new ErrorHolder("error.password.too.often.used",new Object[] { SystemParameter.MAX_PASSWORD_HISTORY_CHECK }));
+				//throw new SystemException(new ErrorHolder("error.password.too.often.used",new Object[] { SystemParameter.MAX_PASSWORD_HISTORY_CHECK }));
 			}
 			else
 			{
@@ -40,23 +39,6 @@ public class PasswordHistoryService implements IPasswordHistoryService{
 			history.setFkAppUser(fkAppUser);
 			historyDao.saveOrUpdate(history);
 		}
-		/*if( !isPasswordExistHistory(password, fkAppUser) )
-		{
-			List <PasswordHistory> listPassHist = historyDao.getTotalPasswordByfkAppuser(fkAppUser);
-			PasswordHistory history = new PasswordHistory();
-	
-			if (listPassHist.size() >= SystemParameter.MAX_PASSWORD_HISTORY_CHECK)
-				historyDao.delete(listPassHist.get(0));
-	
-			history.setPasswordValue(digester.digest(password));
-			history.setRecordedDate(DateTimeFunction.getCurrentDate());
-			history.setFkAppUser(fkAppUser);
-			historyDao.saveOrUpdate(history);
-		}
-		else
-		{
-			throw new SystemException(new ErrorHolder("error.new.password.is.found.on.history"));	
-		}*/
 	}
 
 	@Override

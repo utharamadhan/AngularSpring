@@ -153,7 +153,7 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 				try{
 					mailService.sendMail(new ArrayList<>(Arrays.asList(appUser.getEmail())), SystemParameter.EMAIL_SENDER, "BASE - PENDAFTARAN USER", resolveContent(appUser), null);
 				}catch(Exception e){
-					throw new SystemException (new ErrorHolder("Fail to send Activation Email"));
+					throw new SystemException (ErrorHolder.newInstance("errorCode", "Fail to send Activation Email"));
 				}
 			}
 		} else {
@@ -163,7 +163,7 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 				try{
 					shortMessageService.sendMessage(phoneNumber, resolveSMSContent(appUser.getParty().getName(), appUser.getActivationCode()));
 				}catch(Exception e){
-					throw new SystemException (new ErrorHolder("Fail to send Activation Short Message"));
+					throw new SystemException (ErrorHolder.newInstance("errorCode", "Fail to send Activation Short Message"));
 				}
 			}
 		}
@@ -236,36 +236,32 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 		if (order == null) {
 			order = new ArrayList<SearchOrder>();
 			order.add(new SearchOrder(AppUser.USER_TYPE, Sort.ASC));
-			order.add(new SearchOrder(AppUser.USER_NAME, Sort.ASC));
 		}
 		return userDao.findAllAppUserByFilter(startNo, offset,  filter, order);
 	}
 
-	public AppUser findByUserName(String username) throws SystemException {
-		AppUser appUser = userDao.findAppUserByName(username); 
+	public AppUser findByEmail(String email) throws SystemException {
+		AppUser appUser = userDao.findAppUserByEmail(email); 
 		if(appUser == null) {
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
 		}
-		/*for (Merchant merchant : appUser.getAuthorizedMerchants()) {
-			 merchant.getMerchantPK();
-		}*/
 		return appUser;
 	}
 	
-	public AppUser findByUserNameAndPassword(String username, String unencryptedPassword) throws SystemException {
-		AppUser appUser = userDao.findAppUserByName(username);
+	public AppUser findByEmailAndPassword(String email, String unencryptedPassword) throws SystemException {
+		AppUser appUser = userDao.findAppUserByEmail(email);
 		if(appUser == null) {
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
 		}else if(!matchPassword(unencryptedPassword, appUser.getPassword())){
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
 		}
 		return appUser;
 	}
 	
-	public AppUser findByUserNameAndActivationCode(String username, String activationCode) throws SystemException {
-		AppUser appUser = userDao.findByUserNameAndActivationCode(username, activationCode);
+	public AppUser findByEmailAndActivationCode(String email, String activationCode) throws SystemException {
+		AppUser appUser = userDao.findByEmailAndActivationCode(email, activationCode);
 		if(appUser == null) {
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
 		}
 		return appUser;
 	}
@@ -287,20 +283,20 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 		return Boolean.FALSE;
 	}
 	
-	public AppUser findByUserNameAndType(String username, int type) throws SystemException {
-		AppUser appUser = userDao.findAppUserByNameAndType(username, type); 
+	public AppUser findByEmailAndType(String email, int type) throws SystemException {
+		AppUser appUser = userDao.findAppUserByEmailAndType(email, type); 
 		if(appUser == null) {
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
 		}
 		return appUser;
 	}
 	
-	public AppUser findByUserNameTypeAndPassword(String username, int type, String unencryptedPassword) throws SystemException {
-		AppUser appUser = userDao.findAppUserByNameAndType(username, type); 
+	public AppUser findByEmailTypeAndPassword(String email, int type, String unencryptedPassword) throws SystemException {
+		AppUser appUser = userDao.findAppUserByEmailAndType(email, type); 
 		if(appUser == null) {
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
 		}else if(!matchPassword(unencryptedPassword, appUser.getPassword())){
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
 		}
 		return appUser;
 	}
@@ -335,7 +331,6 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 		if (order == null) {
 			order = new ArrayList<SearchOrder>();
 			order.add(new SearchOrder(AppUser.USER_TYPE, Sort.ASC));
-			order.add(new SearchOrder(AppUser.USER_NAME, Sort.ASC));
 		}
 		return userDao.findAllByFilter(filter, order, null);
 	}
@@ -391,7 +386,7 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 			}*/
 		}catch(Exception e){
 			e.printStackTrace();
-			resultMap.put(SystemConstant.ERROR_LIST, new ArrayList<ErrorHolder>(Arrays.asList(new ErrorHolder(e.getMessage()))));
+			resultMap.put(SystemConstant.ERROR_LIST, new ArrayList<ErrorHolder>(Arrays.asList(ErrorHolder.newInstance("errorCode", e.getMessage()))));
 		}
 		return resultMap;
 	}
@@ -613,8 +608,8 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	}
 	
 	@Override
-	public void activate(String userName, String activationCode) throws SystemException {
-		AppUser appUser = userDao.findAppUserByUserNameAndActivationCode(userName, activationCode);
+	public void activate(String email, String activationCode) throws SystemException {
+		AppUser appUser = userDao.findAppUserByEmailAndActivationCode(email, activationCode);
 			appUser.setLock(Boolean.FALSE);
 			appUser.setStatus(1);
 		userDao.saveOrUpdate(appUser);
@@ -626,8 +621,8 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	}
 
 	@Override
-	public Boolean isEmailAlreadyInUsed(String email) throws SystemException {
-		return userDao.isEmailAlreadyInUsed(email);
+	public Boolean isEmailAlreadyInUsed(Long pkAppUser, String email) throws SystemException {
+		return userDao.isEmailAlreadyInUsed(pkAppUser, email);
 	}
 
 	@Override

@@ -25,8 +25,6 @@ public class RuntimeUserLogin implements Serializable {
 	private String accessInfo;
 	@Column(name = "EMAIL")
 	private String email;
-	@Column(name = "USER_NAME")
-	private String userName;
 	@Column(name = "NAME")
 	private String name;
 	@Column(name="USER_TYPE")
@@ -47,8 +45,8 @@ public class RuntimeUserLogin implements Serializable {
 	}
 
 	/** full constructor */
-	public RuntimeUserLogin(String userName, String name, String remoteAddress, Date loginTime) {
-		this.userName = userName;
+	public RuntimeUserLogin(String email, String name, String remoteAddress, Date loginTime) {
+		this.email = email;
 		this.name = name;
 		this.remoteAddress = remoteAddress;
 		this.loginTime = loginTime;
@@ -73,13 +71,6 @@ public class RuntimeUserLogin implements Serializable {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	public String getName() {

@@ -71,7 +71,7 @@ public class FileRestCaller {
 	private void export(final HttpServletResponse response, String extension)
 			throws SystemException {
 		if(StringFunction.isEmpty(path)){
-			throw new SystemException(new ErrorHolder("FRC Properties not properly set"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "FRC Properties not properly set"));
 		}
 		if(filename!=null){
 			filename = ReportUtils.fixFileName(filename, extension);
@@ -94,7 +94,7 @@ public class FileRestCaller {
 	private void export(final HttpServletRequest fileRequest, final HttpServletResponse response, String extension, List<SearchFilter> filters, List<SearchOrder> orders)
 			throws SystemException {
 		if(StringFunction.isEmpty(path)||StringFunction.isEmpty(filename)){
-			throw new SystemException(new ErrorHolder("FRC Properties not properly set"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "FRC Properties not properly set"));
 		}
 		filename = ReportUtils.fixFileName(filename, extension);
 		try {
@@ -143,7 +143,7 @@ public class FileRestCaller {
 	private void export(final HttpServletResponse response, String extension, List<SearchFilter> filters, List<SearchOrder> orders)
 			throws SystemException {
 		if(StringFunction.isEmpty(path)||StringFunction.isEmpty(filename)){
-			throw new SystemException(new ErrorHolder("FRC Properties not properly set"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "FRC Properties not properly set"));
 		}
 		filename = ReportUtils.fixFileName(filename, extension);
 		try {
@@ -279,7 +279,7 @@ public class FileRestCaller {
 	public void exportManualFlush(final HttpServletResponse response, String extension)
 			throws SystemException {
 		if(StringFunction.isEmpty(path)){
-			throw new SystemException(new ErrorHolder("FRC Properties not properly set"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "FRC Properties not properly set"));
 		}
 		if(filename!=null){
 			filename = ReportUtils.fixFileName(filename, extension);

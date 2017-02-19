@@ -7,6 +7,7 @@ import id.base.app.exception.ErrorHolder;
 import id.base.app.exception.SystemException;
 import id.base.app.rest.RestConstant;
 import id.base.app.service.AuthenticationService;
+import id.base.app.service.user.IUserService;
 import id.base.app.util.DateTimeFunction;
 import id.base.app.valueobject.AppUser;
 import id.base.app.valueobject.party.Party;
@@ -19,8 +20,11 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +36,9 @@ public class AuthenticationController {
 	@Autowired
 	AuthenticationService<LoginSession> authenticationService;
 	
+	@Autowired
+	private IUserService userService;
+	
 	private static final Map<String,String> AUTH_MAPPING = new HashMap<String, String>();
 	static{
 		AUTH_MAPPING.put("u", "userName");
@@ -42,6 +49,16 @@ public class AuthenticationController {
 		AUTH_MAPPING.put("ut", "userType");
 		AUTH_MAPPING.put("pk", "pkAppUser");
 		AUTH_MAPPING.put("su", "superUser");
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value="/authenticateLogin")
+	@ResponseBody
+	public AppUser authenticateLogin(@RequestBody AppUser appUser, BindingResult bindingResult) {
+		try {
+			return userService.findByEmailAndPassword(appUser.getEmail(), appUser.getPassword());	
+		} catch (SystemException e) {
+			throw e;
+		}
 	}
 
 	@RequestMapping(value="/authenticateLogin")
@@ -59,10 +76,10 @@ public class AuthenticationController {
 						BeanUtils.copyProperty(appUser, ent.getValue(), paramWrapper.get(ent.getKey()));
 					}
 				} catch (IllegalAccessException | InvocationTargetException e) {
-					throw new SystemException(new ErrorHolder("Error Binding Parameter: "+ent.getKey()));
+					throw new SystemException(ErrorHolder.newInstance("errorCode", "Error Binding Parameter: "+ent.getKey()));
 				}
 			}else{
-				throw new SystemException(new ErrorHolder("Required Parameter Not Found: "+ent.getKey()));
+				throw new SystemException(ErrorHolder.newInstance("errorCode", "Required Parameter Not Found: "+ent.getKey()));
 			}
 		}
 		return authenticationService.authenticateLogin(appUser);

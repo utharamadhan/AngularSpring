@@ -160,7 +160,7 @@ public abstract class SuperController<T> {
 		} catch (IOException e) {
 			e.printStackTrace();
 			LOGGER.error("error finding your data",e);
-			throw new SystemException(new ErrorHolder("error finding your data"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error finding your data"));
 		}
 	}
 	
@@ -184,7 +184,7 @@ public abstract class SuperController<T> {
 		} catch (IOException e) {
 			e.printStackTrace();
 			LOGGER.error("error finding your data",e);
-			throw new SystemException(new ErrorHolder("error finding your data"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error finding your data"));
 		}
 	}
 	

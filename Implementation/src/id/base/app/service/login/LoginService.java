@@ -88,7 +88,7 @@ public class LoginService implements LoginDirectoryService ,
 			for(Long s:objectPKs){
 				user=userDAO.findAppUserById(s);
 				RuntimeUserLogin userLoginsLogin =new RuntimeUserLogin();
-				userLoginsLogin.setUserName(user.getUserName());
+				userLoginsLogin.setEmail(user.getEmail());
 				runtimeUserlist.add(userLoginsLogin);
 			}
 		return runtimeUserlist;

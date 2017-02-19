@@ -154,7 +154,7 @@ public class MapRestCaller<T, V> extends RestCaller {
 			e.printStackTrace();
 			LOGGER.error("findObjects rest error {}", e);
 			errors = new ArrayList<ErrorHolder>();
-			errors.add(new ErrorHolder(e.getMessage()));
+			errors.add(ErrorHolder.newInstance("errorCode", e.getMessage()));
 		} catch (SystemException e) {
 			throw e;
 		}

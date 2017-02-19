@@ -23,7 +23,7 @@ public class LdapAuthenticationService extends BaseAuthentication {
 	public LoginSession authenticateLogin(AppUser appUser, String password) throws SystemException {
 		boolean success = ldapAuthentication.authenticate(appUser, password);
 		if (!success) {
-			throw new SystemException(new ErrorHolder("error.password.mismatch")) ;
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.password.mismatch")) ;
 		}
 			   
 		return buildLoginSession(appUser);

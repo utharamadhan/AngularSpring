@@ -139,7 +139,7 @@ public class RestCaller<T> extends RestBase<T>{
 			errors = new ArrayList<ErrorHolder>();
 		} catch (URISyntaxException e) {
 			errors = new LinkedList<ErrorHolder>();
-			errors.add(new ErrorHolder("error.executing.rest.service", "create"));
+			errors.add(ErrorHolder.newInstance("error.executing.rest.service", "create"));
 			LOGGER.error("findObjects rest error {}", e);
 		} catch (SystemException e) {
 			errors = e.getErrors();
@@ -158,7 +158,7 @@ public class RestCaller<T> extends RestBase<T>{
 			errors = new ArrayList<ErrorHolder>();
 		} catch (URISyntaxException e) {
 			errors = new LinkedList<ErrorHolder>();
-			errors.add(new ErrorHolder("error.executing.rest.service", "update"));
+			errors.add(ErrorHolder.newInstance("error.executing.rest.service", "update"));
 			LOGGER.error("findObjects rest error {}", e);
 		} catch (SystemException e) {
 			errors = e.getErrors();
@@ -212,7 +212,7 @@ public class RestCaller<T> extends RestBase<T>{
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			errors = new ArrayList<ErrorHolder>();
-			errors.add(new ErrorHolder("error.executing.rest.service", "delete"));
+			errors.add(ErrorHolder.newInstance("error.executing.rest.service", "delete"));
 			LOGGER.error("findObjects rest error {}", e);
 		} catch (SystemException e) {
 			errors = e.getErrors();

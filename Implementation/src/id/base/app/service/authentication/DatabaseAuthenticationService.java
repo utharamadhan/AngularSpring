@@ -45,18 +45,18 @@ public class DatabaseAuthenticationService extends BaseAuthentication {
 
 	private void validateUser(AppUser appUser) {
 		if(appUser==null) {
-			throw new SystemException(new ErrorHolder("error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("error.user.not.found", "error.user.not.found"));
 		}
 	}
 	private void validateActiveStatus(AppUser appUser) {
 		if(appUser.getStatus() == SystemConstant.UserStatus.INACTIVE) {
-			throw new SystemException(new ErrorHolder("error.user.inactive"));
+			throw new SystemException(ErrorHolder.newInstance("error.user.inactive", "error.user.inactive"));
 		}
 	}
 	
 	private void validateLockStatus(AppUser appUser) {
 		if(appUser.getLock() == true) {
-			throw new SystemException(new ErrorHolder("error.user.lock"));
+			throw new SystemException(ErrorHolder.newInstance("error.user.lock", "error.user.lock"));
 		}
 	}
 

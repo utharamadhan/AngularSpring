@@ -30,10 +30,10 @@ public class HelperController extends SuperController<Helper>{
 	public Helper validate(Helper anObject) throws SystemException {
 		List<ErrorHolder> errors = new ArrayList<>();
 		if(anObject.getCode() == null){
-			errors.add(new ErrorHolder("Code is Mandatory"));
+			errors.add(ErrorHolder.newInstance("errorCode", "Code is Mandatory"));
 		}
 		if(anObject.getContent() == null){
-			errors.add(new ErrorHolder("Content is Mandatory"));
+			errors.add(ErrorHolder.newInstance("errorCode", "Content is Mandatory"));
 		}
 		if(errors != null && errors.size() > 0){
 			throw new SystemException(errors);

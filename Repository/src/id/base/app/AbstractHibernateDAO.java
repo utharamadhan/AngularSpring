@@ -111,7 +111,7 @@ public class AbstractHibernateDAO<T,Y extends Serializable> {
 			}
 			return pk;
 		} catch (HibernateException e) {
-			throw new SystemException(new ErrorHolder("error.database.access"));
+			throw new SystemException(ErrorHolder.newInstance("error.database.access", "error.database.access"));
 		}
 	}
 
@@ -134,7 +134,7 @@ public class AbstractHibernateDAO<T,Y extends Serializable> {
 				}
 			}
 			LOGGER.error("update.error",e);
-			throw new SystemException(new ErrorHolder("id", new Object[]{e.getMessage()}));
+			throw new SystemException(ErrorHolder.newInstance("id", e.getMessage()));
 		}
 	}
 	
@@ -151,7 +151,7 @@ public class AbstractHibernateDAO<T,Y extends Serializable> {
 				}
 			}
 			LOGGER.error("update.error",e);
-			throw new SystemException(new ErrorHolder("id", new Object[]{e.getMessage()}));
+			throw new SystemException(ErrorHolder.newInstance("id", e.getMessage()));
 		}
 	}
 
@@ -169,7 +169,7 @@ public class AbstractHibernateDAO<T,Y extends Serializable> {
 				}
 			}
 			LOGGER.error("delete.error",e);
-			throw new SystemException(new ErrorHolder("id", new Object[]{e.getMessage()}));
+			throw new SystemException(ErrorHolder.newInstance("id", e.getMessage()));
 		}
 	}
 	

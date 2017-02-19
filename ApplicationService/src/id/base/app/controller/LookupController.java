@@ -131,7 +131,7 @@ public class LookupController extends SuperController<Lookup>{
 		List<ErrorHolder> errorHolders = new ArrayList<ErrorHolder>();
 		for (Long objectPK : objectPKs) {
 			if(!lookupGroupService.checkUpdatableByLookupPK(objectPK)){
-				errorHolders.add(new ErrorHolder(messageSource.getMessage("error.lookup.is.not.modifiable", null, Locale.ENGLISH)));
+				errorHolders.add(ErrorHolder.newInstance("error.lookup.is.not.updatable", messageSource.getMessage("error.lookup.is.not.modifiable", null, Locale.ENGLISH)));
 				break;
 			}
 		}
@@ -145,16 +145,16 @@ public class LookupController extends SuperController<Lookup>{
 	public Lookup validate(Lookup anObject){
 		List<ErrorHolder> errorHolders = new ArrayList<ErrorHolder>();
 		if(!lookupGroupService.checkUpdatableByGroupName(anObject.getLookupGroupString())){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.lookup.is.not.modifiable", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("error.lookup.is.not.updatable", messageSource.getMessage("error.lookup.is.not.modifiable", null, Locale.ENGLISH)));
 		}
 		if(StringFunction.isEmpty(anObject.getCode())){
-			errorHolders.add(new ErrorHolder(Lookup.CODE, messageSource.getMessage("error.lookup.code.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance(Lookup.CODE, messageSource.getMessage("error.lookup.code.mandatory", null, Locale.ENGLISH)));
 		}
 		if(StringFunction.isEmpty(anObject.getName())){
-			errorHolders.add(new ErrorHolder(Lookup.NAME, messageSource.getMessage("error.lookup.name.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance(Lookup.NAME, messageSource.getMessage("error.lookup.name.mandatory", null, Locale.ENGLISH)));
 		}
 		if(StringFunction.isEmpty(anObject.getDescr())){
-			errorHolders.add(new ErrorHolder(Lookup.DESCRIPTION, messageSource.getMessage("error.lookup.descr.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance(Lookup.DESCRIPTION, messageSource.getMessage("error.lookup.descr.mandatory", null, Locale.ENGLISH)));
 		}
 		if(errorHolders.size()>0){
 			throw new SystemException(errorHolders);

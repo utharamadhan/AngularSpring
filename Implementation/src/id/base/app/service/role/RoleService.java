@@ -73,10 +73,10 @@ public class RoleService implements MaintenanceService<AppRole>,IRoleService {
 		AppRole roleByName = roleDAO.findAppRoleByNameIgnoreCase(role.getName());
 		if(role.getPkAppRole() != null){
 			if(roleByCode != null && !roleByCode.getPkAppRole().equals(role.getPkAppRole())){
-				errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.code.already.exist", null, Locale.ENGLISH)));
+				errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("error.message.user.role.code.already.exist", null, Locale.ENGLISH)));
 			}
 			if(roleByName != null && !roleByName.getPkAppRole().equals(role.getPkAppRole())){
-				errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.name.already.exist", null, Locale.ENGLISH)));
+				errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("error.message.user.role.name.already.exist", null, Locale.ENGLISH)));
 			}
 		}
 		return errorHolders;
@@ -87,7 +87,7 @@ public class RoleService implements MaintenanceService<AppRole>,IRoleService {
 		if(anObject.getPkAppRole()!= null){
 			AppRole check = findByIdFetchUsers(anObject.getPkAppRole());
 			if(check.getUsers().size()>0 && method.equals(AppRole.OP_REMOVE)){
-				errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.already.inused", new String[]{check.getCode()}, Locale.ENGLISH)));
+				errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("error.message.user.role.already.inused", new String[]{check.getCode()}, Locale.ENGLISH)));
 				throw new SystemException(errorHolders);
 			}else{
 				if(method.equals(AppRole.OP_REMOVE)){
@@ -98,10 +98,10 @@ public class RoleService implements MaintenanceService<AppRole>,IRoleService {
 						roleFunctionDAO.deleteAccessList(anObject.getPkAppRole());
 					}
 					if(check.getUsers().size()>0 && !role.getCode().equals(anObject.getCode())){
-						errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.code.cannot.change", new String[]{check.getCode()}, Locale.ENGLISH)));
+						errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("error.message.user.role.code.cannot.change", new String[]{check.getCode()}, Locale.ENGLISH)));
 						throw new SystemException(errorHolders);
 					}else if(check.getUsers().size()>0 && !role.getType().equals(anObject.getType())){
-						errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.user.role.type.cannot.change", new String[]{check.getCode()}, Locale.ENGLISH)));
+						errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("error.message.user.role.type.cannot.change", new String[]{check.getCode()}, Locale.ENGLISH)));
 						throw new SystemException(errorHolders);
 					}else{
 						errorHolders.addAll(validateCodeAndName(anObject));

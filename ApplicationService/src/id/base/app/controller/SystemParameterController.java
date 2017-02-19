@@ -65,37 +65,37 @@ public class SystemParameterController extends SuperController<AppParameter>{
 	public AppParameter validate(AppParameter anObject) {
 		List<ErrorHolder> errorHolders = new ArrayList<ErrorHolder>();
 		if(StringFunction.isEmpty(anObject.getName())){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.parameter.name.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("error.message.paramater.name.mandatory", messageSource.getMessage("error.message.parameter.name.mandatory", null, Locale.ENGLISH)));
 		}
 		if(StringFunction.isEmpty(anObject.getDescr())){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.parameter.descr.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("error.message.parameter.descr.mandatory", messageSource.getMessage("error.message.parameter.descr.mandatory", null, Locale.ENGLISH)));
 		}
 		if(StringFunction.isEmpty(anObject.getValue())){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.parameter.value.mandatory", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("error.message.parameter.value.mandatory", messageSource.getMessage("error.message.parameter.value.mandatory", null, Locale.ENGLISH)));
 		}else{
 			if(anObject.getDatatype().equals(SystemConstant.FIELD_TYPE_INT) && !IntegerFunction.isInteger(anObject.getValue())){
-				errorHolders.add(new ErrorHolder(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.integer", null, Locale.ENGLISH)));
+				errorHolders.add(ErrorHolder.newInstance(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.integer", null, Locale.ENGLISH)));
 			}else if(anObject.getDatatype().equals(SystemConstant.FIELD_TYPE_BOOLEAN) && !StringFunction.isBoolean(anObject.getValue())){
-				errorHolders.add(new ErrorHolder(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.boolean", null, Locale.ENGLISH)));
+				errorHolders.add(ErrorHolder.newInstance(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.boolean", null, Locale.ENGLISH)));
 			}else if(anObject.getDatatype().equals(SystemConstant.FIELD_TYPE_DATE)){
 				if(!DateValidator.getInstance().isValid(anObject.getValue(), SystemConstant.SYSTEM_DATE_MASK_2, true)){
-					errorHolders.add(new ErrorHolder(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.date", null, Locale.ENGLISH)));
+					errorHolders.add(ErrorHolder.newInstance(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.date", null, Locale.ENGLISH)));
 				}
 			}else if(anObject.getDatatype().equals(SystemConstant.FIELD_TYPE_DOUBLE)){
 				try {
 					Double.parseDouble(anObject.getValue());
 				} catch (NumberFormatException e) {
-					errorHolders.add(new ErrorHolder(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.double", null, Locale.ENGLISH)));
+					errorHolders.add(ErrorHolder.newInstance(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.double", null, Locale.ENGLISH)));
 				}
 			}else if(anObject.getDatatype().equals(SystemConstant.FIELD_TYPE_LONG)){
 				try {
 					Long.parseLong(anObject.getValue());
 				} catch (NumberFormatException e) {
-					errorHolders.add(new ErrorHolder(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.long", null, Locale.ENGLISH)));
+					errorHolders.add(ErrorHolder.newInstance(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.long", null, Locale.ENGLISH)));
 				}
 			}else if(anObject.getDatatype().equals(SystemConstant.FIELD_TYPE_CRON)) {
 				if(!org.quartz.CronExpression.isValidExpression(anObject.getValue())){
-					errorHolders.add(new ErrorHolder(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.cron", null, Locale.ENGLISH)));
+					errorHolders.add(ErrorHolder.newInstance(AppParameter.VALUE, messageSource.getMessage("error.message.parameter.value.invalid.cron", null, Locale.ENGLISH)));
 				}
 			}
 		}

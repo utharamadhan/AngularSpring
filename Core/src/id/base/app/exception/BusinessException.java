@@ -31,8 +31,7 @@ public class BusinessException extends RuntimeException  {
 		this.errorCode = errCode;
 		if(detailErrorCodes != null){
 			for(int i=0; i<detailErrorCodes.length; i++){
-	    		ErrorHolder eh = new ErrorHolder(detailErrorCodes[i]);
-	    		addError(eh);
+	    		addError(ErrorHolder.newInstance(errCode, detailErrorCodes[i]));
 			}
 		}
 	}
@@ -65,9 +64,8 @@ public class BusinessException extends RuntimeException  {
 		getErrors().add(error);
 	}
 	
-	public void addError(String errCode, Object[] parameters) {
-		ErrorHolder eh = new ErrorHolder(errCode, parameters);
-		getErrors().add(eh);
+	public void addError(String errCode, String errorMessage) {
+		getErrors().add(ErrorHolder.newInstance(errCode, errorMessage));
 	}
 
 	public Boolean isEmpty(){

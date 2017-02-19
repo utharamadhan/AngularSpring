@@ -38,7 +38,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
 			WebRequest request) throws JsonProcessingException {
 		List<ErrorHolder> errorHolders = new LinkedList<ErrorHolder>();
 		LOGGER.error("RuntimeError {}", e);
-		errorHolders.add(new ErrorHolder(messageSource.getMessage("error.message.default",null,Locale.ENGLISH)));
+		errorHolders.add(ErrorHolder.newInstance("default.error", messageSource.getMessage("error.message.default",null,Locale.ENGLISH)));
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

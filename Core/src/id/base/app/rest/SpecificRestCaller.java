@@ -143,7 +143,7 @@ public class SpecificRestCaller<T> extends RestCaller{
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			LOGGER.error("findObjects rest error {}", e);
-			errors.add(new ErrorHolder("error.executing.rest.service", "executeRest:"+method.name()));
+			errors.add(ErrorHolder.newInstance("error.executing.rest.service", "executeRest:"+method.name()));
 		} catch (SystemException e) {
 			errors.addAll(e.getErrors());
 		}
@@ -171,7 +171,7 @@ public class SpecificRestCaller<T> extends RestCaller{
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			LOGGER.error("findObjects rest error {}", e);
-			errors.add(new ErrorHolder("error.executing.rest.service", "executeRest:"+method.name()));
+			errors.add(ErrorHolder.newInstance("error.executing.rest.service", "executeRest:"+method.name()));
 			throw new SystemException(errors);
 		} catch (SystemException e) {
 			throw e;

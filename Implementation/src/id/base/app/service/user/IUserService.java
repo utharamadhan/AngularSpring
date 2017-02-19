@@ -15,15 +15,15 @@ import java.util.Map;
 
 public interface IUserService extends MaintenanceService<AppUser>{
 	
-	public AppUser findByUserName(String username) throws SystemException;
+	public AppUser findByEmail(String email) throws SystemException;
 	
-	public AppUser findByUserNameAndPassword(String username, String unencryptedPassword) throws SystemException;
+	public AppUser findByEmailAndPassword(String email, String unencryptedPassword) throws SystemException;
 	
-	public AppUser findByUserNameAndActivationCode(String username, String activationCode) throws SystemException;
+	public AppUser findByEmailAndActivationCode(String username, String activationCode) throws SystemException;
 	
-	public AppUser findByUserNameAndType(String username, int type) throws SystemException;
+	public AppUser findByEmailAndType(String username, int type) throws SystemException;
 	
-	public AppUser findByUserNameTypeAndPassword(String username, int type, String unencryptedPassword) throws SystemException;
+	public AppUser findByEmailTypeAndPassword(String username, int type, String unencryptedPassword) throws SystemException;
 	
 	public AppUser findByIdFetchRoles(Long pkUser);
 	
@@ -59,7 +59,7 @@ public interface IUserService extends MaintenanceService<AppUser>{
 	
 	public void updateInitialWizard(Long pkAppUser, Integer initialWizardStep) throws SystemException;
 	
-	public Boolean isEmailAlreadyInUsed(String email) throws SystemException;
+	public Boolean isEmailAlreadyInUsed(Long pkAppUser, String email) throws SystemException;
 	
 	public Boolean isPhoneAlreadyInUsed(String phoneNumber) throws SystemException;
 	

@@ -13,13 +13,13 @@ import java.util.List;
 public interface IUserDAO {
 
 	
-	public abstract AppUser findAppUserByName(String userName) throws SystemException;
+	public abstract AppUser findAppUserByEmail(String email) throws SystemException;
 	
-	public abstract AppUser findAppUserByNameAndPassword(String userName, String unencryptedPassword) throws SystemException;
+	public abstract AppUser findAppUserByEmailAndPassword(String email, String unencryptedPassword) throws SystemException;
 	
-	public abstract AppUser findByUserNameAndActivationCode(String userName, String activationCode) throws SystemException;
+	public abstract AppUser findByEmailAndActivationCode(String email, String activationCode) throws SystemException;
 	
-	public abstract AppUser findAppUserByNameAndType(String userName, int type) throws SystemException;
+	public abstract AppUser findAppUserByEmailAndType(String email, int type) throws SystemException;
 
 	public PagingWrapper<AppUser> findAllAppUserByFilter(int startNo, int offset,
 			List<SearchFilter> searchFilter,List<SearchOrder> order) throws SystemException;
@@ -65,12 +65,12 @@ public interface IUserDAO {
 	
 	public void updateInitialWizard(Long pkAppUser, Integer initialWizardStep) throws SystemException;
 	
-	public Boolean isEmailAlreadyInUsed(String email) throws SystemException;
+	public Boolean isEmailAlreadyInUsed(Long pkAppUser, String email) throws SystemException;
 	
 	public Boolean isPhoneAlreadyInUsed(String phoneNumber) throws SystemException;
 	
 	public Boolean validateActivationCode(String userName, String activationCode) throws SystemException;
 	
-	public AppUser findAppUserByUserNameAndActivationCode(String userName, String activationCode) throws SystemException;
+	public AppUser findAppUserByEmailAndActivationCode(String email, String activationCode) throws SystemException;
 	
 }

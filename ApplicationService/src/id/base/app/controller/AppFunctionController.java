@@ -39,7 +39,7 @@ public class AppFunctionController {
 			return appFunctionService.findAppFunctionByPermissionList(appRoles);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new SystemException(new ErrorHolder("error finding your data"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error finding your data"));
 		}
 	}
 
@@ -55,7 +55,7 @@ public class AppFunctionController {
 			return appFunctionService.findAppFunctionMenuByUserRoles(appRoles);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new SystemException(new ErrorHolder("error finding your data"));
+			throw new SystemException(ErrorHolder.newInstance("errorCode", "error finding your data"));
 		}
 	}
 	

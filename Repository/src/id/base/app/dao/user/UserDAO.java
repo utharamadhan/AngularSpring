@@ -55,32 +55,32 @@ public class UserDAO extends AbstractHibernateDAO<AppUser, Long> implements IUse
 		}
 	}
 
-	public AppUser findAppUserByName(final String userName) throws SystemException {
+	public AppUser findAppUserByEmail(final String email) throws SystemException {
 			return (AppUser) getSession().createCriteria(AppUser.class).add(
-					Restrictions.eq(AppUser.USER_NAME, userName).ignoreCase())
+					Restrictions.eq(AppUser.EMAIL, email).ignoreCase())
 					.setFetchMode(AppUser.APP_ROLES, FetchMode.EAGER)
 					.uniqueResult();
 	}
 	
-	public AppUser findByUserNameAndActivationCode(final String userName, final String activationCode) throws SystemException {
+	public AppUser findByEmailAndActivationCode(final String email, final String activationCode) throws SystemException {
 		return (AppUser) getSession().createCriteria(AppUser.class).add(
-				Restrictions.eq(AppUser.USER_NAME, userName).ignoreCase())
+				Restrictions.eq(AppUser.EMAIL, email).ignoreCase())
 				.add(Restrictions.eq(AppUser.ACTIVATION_CODE, activationCode))
 				.setFetchMode(AppUser.APP_ROLES, FetchMode.JOIN)
 				.uniqueResult();
 	}
 	
-	public AppUser findAppUserByNameAndPassword(final String userName, final String encryptedPassword) throws SystemException {
+	public AppUser findAppUserByEmailAndPassword(final String email, final String encryptedPassword) throws SystemException {
 		return (AppUser) getSession().createCriteria(AppUser.class).add(
-				Restrictions.eq(AppUser.USER_NAME, userName).ignoreCase())
+				Restrictions.eq(AppUser.EMAIL, email).ignoreCase())
 				.add(Restrictions.eq(AppUser.PASSWORD, encryptedPassword))
 				.setFetchMode(AppUser.APP_ROLES, FetchMode.EAGER)
 				.uniqueResult();
 }
 	
-	public AppUser findAppUserByNameAndType(final String userName, final int type) throws SystemException {
+	public AppUser findAppUserByEmailAndType(final String email, final int type) throws SystemException {
 		return (AppUser) getSession().createCriteria(AppUser.class).add(
-				Restrictions.eq(AppUser.USER_NAME, userName).ignoreCase()).add(Restrictions.eq(AppUser.USER_TYPE, type))
+				Restrictions.eq(AppUser.EMAIL, email).ignoreCase()).add(Restrictions.eq(AppUser.USER_TYPE, type))
 				.setFetchMode(AppUser.APP_ROLES, FetchMode.EAGER)
 				.uniqueResult();
 	}
@@ -194,9 +194,9 @@ public class UserDAO extends AbstractHibernateDAO<AppUser, Long> implements IUse
 		select2.append("SELECT * FROM APP_USER WHERE UPPER(USER_NAME) = '").append(userName.trim().toUpperCase()).append("'");
 		Query querySelect2 = getSession().createSQLQuery(select2.toString());
 		if(querySelect.list().isEmpty()){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("user.id.not.found", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("user.id.not.found", null, Locale.ENGLISH)));
 		}else if(!querySelect2.list().isEmpty()){
-			errorHolders.add(new ErrorHolder(messageSource.getMessage("user.id.already.register", null, Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance("errorCode", messageSource.getMessage("user.id.already.register", null, Locale.ENGLISH)));
 		}
 		return errorHolders;
 	}
@@ -258,8 +258,11 @@ public class UserDAO extends AbstractHibernateDAO<AppUser, Long> implements IUse
 	}
 
 	@Override
-	public Boolean isEmailAlreadyInUsed(String email) throws SystemException {
+	public Boolean isEmailAlreadyInUsed(Long pkAppUser, String email) throws SystemException {
 		Criteria crit = getSession().createCriteria(domainClass);
+			if(pkAppUser != null) {
+				crit.add(Restrictions.ne(AppUser.PK_APP_USER, pkAppUser));
+			}
 			crit.add(Restrictions.eq(AppUser.EMAIL, email).ignoreCase());
 			crit.setProjection(Projections.rowCount());
 		Long countRow = (Long) crit.uniqueResult();
@@ -268,9 +271,8 @@ public class UserDAO extends AbstractHibernateDAO<AppUser, Long> implements IUse
 
 	@Override
 	public Boolean isPhoneAlreadyInUsed(String phoneNumber) throws SystemException {
-		//check whether phone number already in used as username for another account
 		Criteria crit = getSession().createCriteria(domainClass);
-			crit.add(Restrictions.eq(AppUser.USER_NAME, phoneNumber));
+			crit.add(Restrictions.eq(AppUser.EMAIL, phoneNumber));
 			crit.setProjection(Projections.rowCount());
 		Long countRow = (Long) crit.uniqueResult();
 		return countRow != null && countRow > 0 ? Boolean.TRUE : Boolean.FALSE;
@@ -279,7 +281,7 @@ public class UserDAO extends AbstractHibernateDAO<AppUser, Long> implements IUse
 	@Override
 	public Boolean validateActivationCode(String userName, String activationCode) throws SystemException {
 		Criteria crit = getSession().createCriteria(domainClass);
-			crit.add(Restrictions.eq(AppUser.USER_NAME, userName));
+			crit.add(Restrictions.eq(AppUser.EMAIL, userName));
 			crit.add(Restrictions.eq(AppUser.ACTIVATION_CODE, activationCode));
 			crit.setProjection(Projections.rowCount());
 		Long countRow = (Long) crit.uniqueResult();
@@ -287,9 +289,9 @@ public class UserDAO extends AbstractHibernateDAO<AppUser, Long> implements IUse
 	}
 
 	@Override
-	public AppUser findAppUserByUserNameAndActivationCode(String userName, String activationCode) throws SystemException {
+	public AppUser findAppUserByEmailAndActivationCode(String email, String activationCode) throws SystemException {
 		Criteria crit = getSession().createCriteria(domainClass);
-			crit.add(Restrictions.eq(AppUser.USER_NAME, userName));
+			crit.add(Restrictions.eq(AppUser.EMAIL, email));
 			crit.add(Restrictions.eq(AppUser.ACTIVATION_CODE, activationCode));
 			crit.setMaxResults(1);
 		return (AppUser) crit.uniqueResult();

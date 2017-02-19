@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="header">
+	     <div class="container">
+	        <div class="row">
+	           <div class="col-md-12">
+	              <!-- Logo -->
+	              <div class="logo">
+	                 <h1><a href="#!login"><img src="./img/rr-logo-white.png" style="width:35px;"></img></a></h1>
+	              </div>
+	           </div>
+	        </div>
+	     </div>
+	</div>
+	<div class="page-content container" ng-controller="LoginController">
+		<div class="row">
+			<div class="col-md-5 col-md-offset-7">
+				<div class="login-wrapper">
+			        <div class="box">
+			            <div class="content-wrap">
+			                <h6>Log in to <img src="./img/rr-logo.png" style="width: 70px;"/></h6>
+	                        <form action="#" name="loginForm">
+				                <input class="form-control" type="text" name="userName" ng-model="user.userName" placeholder="Username" >
+				                <span ng-show="showError && loginForm.userName.$invalid">The name is required.</span>
+				                <input class="form-control" type="password" name="password" ng-model="user.password" placeholder="Password" required>
+				                <span ng-show="showError && loginForm.password.$invalid">The Password is required.</span>
+				                <div class="action">
+				                    <a class="btn btn-primary signup" href="index.html" ng-click="login(loginForm.$valid)">Login</a>
+				                </div>
+			                </form>
+			            </div>
+			        </div>
+			        <div class="already">
+			            <p>Don't have an account yet?</p>
+			            <a href="#!/signup">Sign Up</a>
+			        </div>
+			    </div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

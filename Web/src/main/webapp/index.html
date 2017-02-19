@@ -1,31 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head>  
-    <title>Simple Angular Apps</title>  
-	<link rel="stylesheet" href="style/bootstrap.css">
-	<link rel="stylesheet" href="style/app.css">
+<head>
+    <title>rpramadhan.com</title>
+    <link href="./vendor/bootstrap/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="./vendor/bootstrap/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
+    <link href="./style/styles.css" rel="stylesheet" type="text/css">
+    <link href="./img/rr-favicon.ico" rel="shortcut icon" type="image/x-icon"> 
 </head>
-<body ng-app="myApp">
-  
-	<div class="container">
+<body ng-app="myApp" class="{{bodyClass}}">
+    <div loader-gif></div>
+	<div>
     	<div ui-view></div>
 	</div>
 	
-	<!-- vendor --> 
+	<!-- vendor -->
+  	<script src="./vendor/jquery/jquery.js"></script>
+  	<script src="./vendor/bootstrap/bootstrap.js"></script>
+  	<script src="./js/custom.js"></script>
 	<script src="./vendor/angular/angular.min.js"></script>
 	<script src="./vendor/angular-ui-router/angular-ui-router.min.js"></script>
-    <!-- end vendor -->
-      
-    <script src="./app/app.js"></script>
-    
-    <!-- services -->
-    <script src="./app/service/simpleObjectService.js"></script>
-    <!-- end services -->
-      
+	<script src="./js/loaderGIF.js"></script>
+  	<!-- end vendor -->
+
+	<script src="./app/app.js"></script>
+
+	<!-- services -->
+	<script src="./app/service/simpleObjectService.js"></script>
+	<script src="./app/service/loginService.js"></script>
+	<script src="./app/service/user/userService.js"></script>
+	<!-- end services -->
+
 	<!-- controller list -->
 	<script src="./app/controller/appController.js"></script>
+  	<script src="./app/controller/loginController.js"></script>
+  	<script src="./app/controller/signupController.js"></script>
 	<script src="./app/controller/simpleObject/simpleObjectController.js"></script>
 	<!-- end controller -->
 	
-  </body>
+</body>
 </html>
