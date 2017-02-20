@@ -43,7 +43,7 @@ public class SystemExceptionHandler extends ResponseEntityExceptionHandler {
 		List<ErrorHolder> rawErrors = se.getErrors();
 		for (ErrorHolder error : rawErrors) {
 			LOGGER.error(error.getError());
-			errorHolders.add(new ErrorHolder(error.getValidatedField(), messageSource.getMessage(error.getError(), error.getParameter(), Locale.ENGLISH)));
+			errorHolders.add(ErrorHolder.newInstance(error.getValidatedField(), messageSource.getMessage(error.getError(), error.getParameter(), Locale.ENGLISH)));
 		}
 
 		HttpHeaders headers = new HttpHeaders();

@@ -11,7 +11,6 @@ public abstract class BaseAuthentication implements AuthenticationService<LoginS
 		loginSession.setPkAppUser(appUser.getPkAppUser());
 		loginSession.setEmail(appUser.getEmail());
 		loginSession.setName(appUser.getParty().getName());
-		loginSession.setUserType(appUser.getUserType());
 		loginSession.setFlagSuperUser(Boolean.TRUE);
 		return loginSession;
 	}

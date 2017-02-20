@@ -7,6 +7,9 @@ App.factory('UserService', ['$http', '$q', function($http, $q){
     return {
       register: function(user, successCallback, failCallback) {
         return $http.post(sURL + "/create", user).then(successCallback, failCallback);
+      }, 
+      activate: function(user, successCallback, failCallback) {
+    	  return $http.post(sURL + "/activate", user).then(successCallback, failCallback);
       }
     }
     

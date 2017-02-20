@@ -145,7 +145,7 @@ public abstract class POIUtil {
 			return cell.getRichStringCellValue().getString().trim();
 		}else if(dataType == ILookupConstant.FieldDataType.EMAIL){
 			String emailValue = cell.getRichStringCellValue().getString().trim();
-			if(!StringFunction.isEmpty(emailValue) && !EmailFunction.isAddressValidRegex(emailValue)){
+			if(!StringFunction.isEmpty(emailValue) && !EmailFunction.isValid(emailValue)){
     			throw new Exception("not valid email");
     		}else{
     			return emailValue;

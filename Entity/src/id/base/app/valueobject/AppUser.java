@@ -36,10 +36,6 @@ public class AppUser extends BaseEntity implements Serializable {
 		return new AppUser();
 	}
 	
-	public AppUser(AppUser appUser) {	
-	    setUserType(appUser.getUserType());
-	}
-	
 	public static final String PK_APP_USER = "pkAppUser" ;
 	public static final String USER_TYPE = "userType" ;
 	public static final String EMAIL = "email" ;
@@ -73,9 +69,6 @@ public class AppUser extends BaseEntity implements Serializable {
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="FK_PARTY")
 	private Party party;
-	
-	@Column(name="USER_TYPE")
-    private Integer userType;
 	
 	@Column(name="EMAIL")
     private String email;
@@ -144,23 +137,13 @@ public class AppUser extends BaseEntity implements Serializable {
 	public Party getParty() {
 		return party;
 	}
-
 	public void setParty(Party party) {
 		this.party = party;
-	}
-	
-	public Integer getUserType() {
-		return userType;
-	}
-
-	public void setUserType(Integer userType) {
-		this.userType = userType;
 	}
 
 	public String getEmail() {
 		return email;
 	}
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -168,10 +151,10 @@ public class AppUser extends BaseEntity implements Serializable {
 	public String getPassword() {
 		return password;
 	}
-
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
 	public String getRandomKey() {
 		return randomKey;
 	}
@@ -255,13 +238,6 @@ public class AppUser extends BaseEntity implements Serializable {
 	}
 	public void setSuperUser(Boolean superUser) {
 		this.superUser = superUser;
-	}
-
-	public String getRoleFlag() {
-		return roleFlag;
-	}
-	public void setRoleFlag(String roleFlag) {
-		this.roleFlag = roleFlag;
 	}
 
 	public String getActivationCode() {

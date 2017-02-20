@@ -8,16 +8,16 @@ import id.base.app.util.dao.SearchFilter;
 import id.base.app.util.dao.SearchOrder;
 import id.base.app.valueobject.AppRole;
 import id.base.app.valueobject.AppUser;
+import id.base.app.valueobject.RuntimeUserLogin;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface IUserService extends MaintenanceService<AppUser>{
 	
 	public AppUser findByEmail(String email) throws SystemException;
 	
-	public AppUser findByEmailAndPassword(String email, String unencryptedPassword) throws SystemException;
+	public RuntimeUserLogin buildRuntimeUserLogin(String email, String unencryptedPassword, String remoteAddress) throws SystemException;
 	
 	public AppUser findByEmailAndActivationCode(String username, String activationCode) throws SystemException;
 	
@@ -40,12 +40,7 @@ public interface IUserService extends MaintenanceService<AppUser>{
 	
 	public AppUser findExternalAppUserById(Long id) throws SystemException;
 	
-	public List<AppUser> findSupervisor(Long partnerPkParty, Long pkLocationStructure, Long pkTitleStructure, Long pkOrgUnit)
-			throws SystemException;
-	
-	public Map<String, Object> validateFile(String fileName, Long pkPartner) throws SystemException;
-	
-	public Map<String, Object> processFile(String fileName, Long pkPartner) throws SystemException;
+	public List<AppUser> findSupervisor(Long partnerPkParty, Long pkLocationStructure, Long pkTitleStructure, Long pkOrgUnit) throws SystemException;
 	
 	public AppUser activateUserByActivationCode(String activationCode) throws SystemException;
 	

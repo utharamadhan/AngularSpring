@@ -1,6 +1,7 @@
 package id.base.app.valueobject;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -14,43 +15,27 @@ public class RuntimeUserLogin implements Serializable {
 
 	private static final long serialVersionUID = -7619739878194444047L;
 	
-	public static final String USER_NAME = "userName";
-	public static final String NAME = "name";
-	public static final String ACCESS_INFO = "accessInfo";
+	public static final String USER_ID = "userId";
+	public static final String EMAIL = "email";
+	
+	public static RuntimeUserLogin newInstance(Long userId, String email, String remoteAddress) {
+		RuntimeUserLogin obj = new RuntimeUserLogin();
+			obj.setUserId(userId);
+			obj.setEmail(email);
+			obj.setRemoteAddress(remoteAddress);
+			obj.setLoginTime(Calendar.getInstance().getTime());
+		return obj;
+	}
 	
 	@Id
 	@Column(name = "USER_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	private Long userId;
-	@Column(name = "ACCESS_INFO")
-	private String accessInfo;
 	@Column(name = "EMAIL")
 	private String email;
-	@Column(name = "NAME")
-	private String name;
-	@Column(name="USER_TYPE")
-    private Integer userType;
-	@Column(name="SESSION_TYPE")
-    private Integer sessionType;
 	@Column(name = "LOGIN_TIME")
 	private Date loginTime;
 	@Column(name = "REMOTE_ADDRESS")
 	private String remoteAddress;
-	@Column(name = "COMPANY_LIST")
-	private String companyList;
-	@Column(name = "COMPANY_SELECTED")
-	private Long companySelected;
-	
-	/** default constructor */
-	public RuntimeUserLogin() {
-	}
-
-	/** full constructor */
-	public RuntimeUserLogin(String email, String name, String remoteAddress, Date loginTime) {
-		this.email = email;
-		this.name = name;
-		this.remoteAddress = remoteAddress;
-		this.loginTime = loginTime;
-	}
 	
 	public Long getUserId() {
 		return userId;
@@ -59,25 +44,11 @@ public class RuntimeUserLogin implements Serializable {
 		this.userId = userId;
 	}
 
-	public String getAccessInfo() {
-		return accessInfo;
-	}
-	public void setAccessInfo(String accessInfo) {
-		this.accessInfo = accessInfo;
-	}
-
 	public String getEmail() {
 		return email;
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getRemoteAddress() {
@@ -93,35 +64,5 @@ public class RuntimeUserLogin implements Serializable {
 	public void setLoginTime(Date loginTime) {
 		this.loginTime = loginTime;
 	}
-	
-	public Integer getUserType() {
-		return userType;
-	}
-	public void setUserType(Integer userType) {
-		this.userType = userType;
-	}
-	
-	public Integer getSessionType() {
-		if(sessionType==null){
-			sessionType = userType;
-		}
-		return sessionType;
-	}
-	public void setSessionType(Integer sessionType) {
-		this.sessionType = sessionType;
-	}
 
-	public String getCompanyList() {
-		return companyList;
-	}
-	public void setCompanyList(String companyList) {
-		this.companyList = companyList;
-	}
-
-	public Long getCompanySelected() {
-		return companySelected;
-	}
-	public void setCompanySelected(Long companySelected) {
-		this.companySelected = companySelected;
-	}
 }

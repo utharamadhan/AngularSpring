@@ -29,7 +29,7 @@ public class SimpleObjectController extends SuperController<SimpleObject>{
 	public SimpleObject validate(SimpleObject anObject) throws SystemException {
 		List<ErrorHolder> errorList = new ArrayList<>();
 		if(StringFunction.isEmpty(anObject.getName())) {
-			errorList.add(new ErrorHolder("name", messageSource.getMessage("error.mandatory", new String[]{"name"}, Locale.ENGLISH)));
+			errorList.add(ErrorHolder.newInstance("name", messageSource.getMessage("error.mandatory", new String[]{"name"}, Locale.ENGLISH)));
 		}
 		if(errorList.size() > 0) {
 			throw new SystemException(errorList);

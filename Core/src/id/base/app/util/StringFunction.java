@@ -14,6 +14,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 
 public class StringFunction extends DateTimeFunction {
@@ -508,6 +510,23 @@ public class StringFunction extends DateTimeFunction {
 		    }
 		} catch (Exception e) {}
 		return sb.toString();
+	}
+	
+	public static String getRemoteAddress(HttpServletRequest request) {
+	   try {
+		   String ip = request.getHeader("x-forwarded-for");      
+		   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+		       ip = request.getHeader("Proxy-Client-IP");      
+		   }      
+		   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+		       ip = request.getHeader("WL-Proxy-Client-IP");      
+		   }      
+		   if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {      
+		       ip = request.getRemoteAddr();      
+		   }      
+		   return ip;
+	   } catch (Exception e) {}
+	   return null;
 	}
 	
 }

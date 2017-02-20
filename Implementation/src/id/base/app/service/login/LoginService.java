@@ -20,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class LoginService implements LoginDirectoryService ,
-     MaintenanceService<RuntimeUserLogin> {
+public class LoginService implements LoginDirectoryService, MaintenanceService<RuntimeUserLogin> {
 	
 	@Autowired
 	protected  ILoginDAO loginDAO;
@@ -105,29 +104,13 @@ public class LoginService implements LoginDirectoryService ,
 	}
 
 	@Override
-	public List<RuntimeUserLogin> findAll(List<SearchFilter> filter,
-			List<SearchOrder> order) throws SystemException {
-		// TODO Auto-generated method stub
+	public List<RuntimeUserLogin> findAll(List<SearchFilter> filter, List<SearchOrder> order) throws SystemException {
 		return null;
 	}
 
 	@Override
-	public RuntimeUserLogin findByAccessInfoId(String accessInfoId)
-			throws SystemException {
-		RuntimeUserLogin rul = loginDAO.findByAccessInfoId(accessInfoId);
-		//TODO find the blocked variable here
-		
-		return rul;
+	public RuntimeUserLogin findByEmail(String email) throws SystemException {
+		return loginDAO.findByEmail(email);
 	}
-
-	@Override
-	public RuntimeUserLogin findByUserName(String userName)
-			throws SystemException {
-		RuntimeUserLogin rul = loginDAO.findByUserName(userName);
-		//TODO find the blocked variable here
-		if(null != rul){	
-		}
-		
-		return rul;
-	}
+	
 }

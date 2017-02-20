@@ -7,8 +7,10 @@ import java.util.Date;
 
 public interface AuthenticationService<T> {
 	
-	public T authenticateLogin(AppUser appUser) throws SystemException ;
-	public T authenticateLogin(AppUser appUser, String pass) throws SystemException ;
+	public T authenticateLogin(AppUser appUser) throws SystemException;
+	
+	public T authenticateLogin(AppUser appUser, String pass) throws SystemException;
+	
 	public abstract boolean isNotificationPeriod(Date expiredDate, Date currentDate)throws SystemException;
 
 }

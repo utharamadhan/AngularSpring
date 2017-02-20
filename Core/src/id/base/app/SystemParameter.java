@@ -6,23 +6,12 @@ import id.base.app.util.ReflectionFunction;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * This is the default value for system parameter.
- * THis class will be used in run time.
- * TO update this value, Sysparam maintenance will call updateSystemEnvironment(String,String)
- * Before use, please load using SystemParameterLoader.
- */
 public class SystemParameter {
-	
-    private static final Logger logger = LoggerFactory.getLogger(SystemParameter.class);
 
-	public static String EMAIL_SENDER = "postmaster@base.id";
-	public static String MAIL_USERNAME = "SMTP_Injection";
-	public static String MAIL_PASSWORD = "efbabe7b51e09a87a9c5d63877e4a331db7e368f";
-	public static String MAIL_HOST = "smtp.sparkpostmail.com";
+	public static String EMAIL_SENDER = "utharamadhan@gmail.com";
+	public static String MAIL_USERNAME = "utharamadhan@gmail.com";
+	public static String MAIL_PASSWORD = "emangbener";
+	public static String MAIL_HOST = "smtp.gmail.com";
 	public static int MAIL_PORT = 587;
 	
 	public static class SparkPostConfiguration {

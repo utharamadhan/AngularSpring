@@ -4,10 +4,11 @@
     <title>rpramadhan.com</title>
     <link href="./vendor/bootstrap/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="./vendor/bootstrap/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
+    <link href="./vendor/alertify/alertify.css" rel="stylesheet" type="text/css" />
     <link href="./style/styles.css" rel="stylesheet" type="text/css">
     <link href="./img/rr-favicon.ico" rel="shortcut icon" type="image/x-icon"> 
 </head>
-<body ng-app="myApp" class="{{bodyClass}}">
+<body ng-app="myApp" ng-controller="AppController" class="{{bodyClass}}">
     <div loader-gif></div>
 	<div>
     	<div ui-view></div>
@@ -16,9 +17,11 @@
 	<!-- vendor -->
   	<script src="./vendor/jquery/jquery.js"></script>
   	<script src="./vendor/bootstrap/bootstrap.js"></script>
+  	<script src="./vendor/alertify/alertify.js"></script>
   	<script src="./js/custom.js"></script>
 	<script src="./vendor/angular/angular.min.js"></script>
 	<script src="./vendor/angular-ui-router/angular-ui-router.min.js"></script>
+	<script src="./vendor/angular-cookies/angular-cookies.js"></script>
 	<script src="./js/loaderGIF.js"></script>
   	<!-- end vendor -->
 
@@ -26,7 +29,7 @@
 
 	<!-- services -->
 	<script src="./app/service/simpleObjectService.js"></script>
-	<script src="./app/service/loginService.js"></script>
+	<script src="./app/service/authenticationService.js"></script>
 	<script src="./app/service/user/userService.js"></script>
 	<!-- end services -->
 
@@ -34,7 +37,8 @@
 	<script src="./app/controller/appController.js"></script>
   	<script src="./app/controller/loginController.js"></script>
   	<script src="./app/controller/signupController.js"></script>
-	<script src="./app/controller/simpleObject/simpleObjectController.js"></script>
+  	<script src="./app/controller/activationController.js"></script>
+  	<script src="./app/controller/webPage/basicWebController.js"></script>
 	<!-- end controller -->
 	
 </body>

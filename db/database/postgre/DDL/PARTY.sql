@@ -9,7 +9,7 @@ CREATE TABLE party
 (
   pk_party bigint NOT NULL DEFAULT nextval('PARTY_PK_PARTY_SEQ'::regclass),
   fk_party_parent bigint,
-  name character varying(200) NOT NULL,
+  name character varying(200),
   created_by character varying(200) NOT NULL,
   creation_time timestamp with time zone NOT NULL DEFAULT now(),
   modified_by character varying(200) NOT NULL,

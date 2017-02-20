@@ -6,8 +6,6 @@ import id.base.app.service.MaintenanceService;
 import id.base.app.service.login.LoginDirectoryService;
 import id.base.app.valueobject.RuntimeUserLogin;
 
-import javax.ws.rs.QueryParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -47,28 +45,14 @@ public class RuntimeUserLoginController extends SuperController<RuntimeUserLogin
 		loginService.unregister(userPK);
 	}
 	
-	@RequestMapping(method=RequestMethod.GET, value="/findByAccessInfoId/{aaid}")
+	@RequestMapping(method=RequestMethod.GET, value="/findByEmail/{email}")
 	@ResponseBody
-	public RuntimeUserLogin findByAccessInfoId(@PathVariable(value="aaid") String accessInfoId) throws SystemException{
-		return loginService.findByAccessInfoId(accessInfoId);
-	}
-	
-	@RequestMapping(method=RequestMethod.GET, value="/findByUserName/{userName}")
-	@ResponseBody
-	public RuntimeUserLogin findByUserName(@PathVariable(value="userName") String userName) throws SystemException{
-		return loginService.findByUserName(userName);
-	}
-	
-	@RequestMapping(method=RequestMethod.GET, value="/findByUserNameParam")
-	@ResponseBody
-	public RuntimeUserLogin findByUserNameParam(@QueryParam(value="userName") String userName) throws SystemException{
-		return loginService.findByUserName(userName);
+	public RuntimeUserLogin findByUserName(@PathVariable(value="email") String email) throws SystemException{
+		return loginService.findByEmail(email);
 	}
 
 	@Override
-	public RuntimeUserLogin validate(RuntimeUserLogin anObject)
-			throws SystemException {
-		// TODO Auto-generated method stub
+	public RuntimeUserLogin validate(RuntimeUserLogin anObject) throws SystemException {
 		return null;
 	}
 }

@@ -1,15 +1,21 @@
 'use strict';
 
-App.controller('SignUpController', ['$rootScope', '$scope', '$state', 'UserService', function($rootScope, $scope, $state, UserService) {
+App.controller('ActivationController', 
+		['$rootScope', '$scope', '$state', 'UserService', '$stateParams', 
+		 		function($rootScope, $scope, $state, UserService, $stateParams) {
 	$scope.user = {};
 	
-	$scope.submitRegister = function(isValid) {
+	if($stateParams.email) {
+		$scope.user.email = $stateParams.email;
+	}
+	
+	$scope.submitActivation = function(isValid) {
 		$scope.showError = false;
 		if (isValid) {
 			$rootScope.isLoaderShown = true;
-			UserService.register($scope.user, function(resp){
-            	if (resp.status == 200 && resp.data) {
-            		$state.go('/simpleObject');
+			UserService.activate($scope.user, function(resp){
+            	if (resp.status == 200) {
+            		$state.go('login');
             	}
             	$rootScope.isLoaderShown = false;
             }, function(resp){
@@ -24,5 +30,4 @@ App.controller('SignUpController', ['$rootScope', '$scope', '$state', 'UserServi
     		$scope.showError = true;
     	}
 	};
-	
 }]);

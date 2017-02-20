@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Activation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="header">
+	     <div class="container">
+	        <div class="row">
+	           <div class="col-md-9">
+	              <!-- Logo -->
+	              <div class="logo">
+	                 <h1><a href="#!/login"><img src="./img/rr-logo-white.png" style="width:35px;"></img></a></h1>
+	              </div>
+	           </div>
+	           <div class="col-md-3">
+	              <div class="back-to-login">	              
+              		<!-- Back to Login -->
+              		<a href="#" href="#!/login">Have an account? Log in to <img src="./img/rr-logo-white.png" style="width: 25px;"/></a>
+	              </div>
+	           </div>
+	        </div>
+	     </div>
+	</div>
+	<div class="page-content container" ng-controller="ActivationController">
+		<div class="row">
+			<div class="col-md-5 col-md-offset-3">
+				<div class="login-wrapper">
+			        <div class="box">
+			            <div class="content-wrap">
+			                <h6>Activate your <img src="./img/rr-logo.png" style="width: 70px;"/> 's account.</h6>
+	                        <form action="#" name="activationForm">
+			                	<input id="activationCode" name="activationCode" ng-class="{'has-error': showError && activationForm.activationCode.$invalid, 'form-control' : true, 'text-align-center-important': true}" type="text" placeholder="Activation Code" ng-model="user.activationCode" required>				                
+		                		<span class="error-message" ng-show="showError && activationForm.activationCode.$invalid">Activation Code is required.</span>
+				                <div class="action">
+				                    <a class="btn btn-primary activation" ng-click="submitActivation(activationForm.$valid)">Activate</a>
+				                </div>
+			                </form>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

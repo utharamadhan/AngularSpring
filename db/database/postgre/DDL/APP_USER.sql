@@ -10,8 +10,6 @@ CREATE TABLE app_user
   pk_app_user bigint NOT NULL DEFAULT nextval('APP_USER_PK_APP_USER_SEQ'::regclass),
   fk_party bigint NOT NULL,
   is_super_user boolean NOT NULL DEFAULT false,
-  user_type integer NOT NULL,
-  user_name character varying(200) NOT NULL,
   email character varying(200) NOT NULL,
   password character varying(255) NOT NULL,
   random_key character varying(255),

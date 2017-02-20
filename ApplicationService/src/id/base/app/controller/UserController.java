@@ -8,11 +8,14 @@ import id.base.app.service.MaintenanceService;
 import id.base.app.service.lookup.ILookupService;
 import id.base.app.service.party.IPartyService;
 import id.base.app.service.user.IUserService;
+import id.base.app.util.EmailFunction;
 import id.base.app.util.StringFunction;
 import id.base.app.util.dao.SearchFilter;
 import id.base.app.util.dao.SearchOrder;
+import id.base.app.validation.InvalidRequestException;
 import id.base.app.valueobject.AppUser;
-import id.base.app.valueobject.party.PartyContact;
+import id.base.app.valueobject.CreateEntity;
+import id.base.app.valueobject.party.Party;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,14 +25,16 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -39,16 +44,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 public class UserController extends SuperController<AppUser>{
 	
 	@Autowired
-	@Qualifier("userMaintenanceService")
-	private MaintenanceService<AppUser> maintenanceService;
-	
-	@Autowired
 	private IUserService userService;
-	
 	@Autowired
 	private ILookupService lookupService;
 	@Autowired
 	private IPartyService partyService;
+	
+	@Override
+	public MaintenanceService<AppUser> getMaintenanceService() {
+		return this.userService;
+	}
 	
 	@RequestMapping(method=RequestMethod.GET, value="/findByIdFetchRoles/{id}")
 	public AppUser findByIdFetchRoles(@PathVariable( "id" ) Long pkUser) {
@@ -58,11 +63,6 @@ public class UserController extends SuperController<AppUser>{
 	@RequestMapping(method=RequestMethod.GET, value="/findExternalAppUserById/{id}")
 	public AppUser findExternalAppUserById(@PathVariable( "id" ) Long pkUser) {
 		return userService.findExternalAppUserById(pkUser);
-	}
-	
-	@Override
-	public MaintenanceService<AppUser> getMaintenanceService() {
-		return this.maintenanceService;
 	}
 
 	@RequestMapping(method=RequestMethod.GET, value="/findByEmail/{email}")
@@ -112,13 +112,26 @@ public class UserController extends SuperController<AppUser>{
 		}catch(Exception e){
 			
 		}
-		//userService.delete(pkDelete);
 	}
 	
-	@RequestMapping(method=RequestMethod.GET, value="/activateUserByActivationCode/{activationCode}")
+	@RequestMapping(method=RequestMethod.POST, value="/activate")
 	@ResponseBody
-	public AppUser activateUserByActivationCode(@PathVariable(value="activationCode") String activationCode) {
-		return userService.activateUserByActivationCode(activationCode);
+	public void activate(@RequestBody AppUser anObject, BindingResult bindingResult) throws SystemException {
+		if (bindingResult.hasErrors()) {
+            throw new InvalidRequestException("Invalid validation", bindingResult);
+        }
+		AppUser appUser = null;
+		if (StringFunction.isEmpty(anObject.getEmail())) {
+			throw new SystemException(ErrorHolder.newInstance("ERAC01", messageSource.getMessage("error.mandatory", new String[]{"email"}, Locale.ENGLISH)));
+		}
+		if (StringFunction.isEmpty(anObject.getActivationCode())) {
+			throw new SystemException(ErrorHolder.newInstance("ERAC02", messageSource.getMessage("error.mandatory", new String[]{"activation code"}, Locale.ENGLISH)));
+		}
+		appUser = userService.findByEmailAndActivationCode(anObject.getEmail(), anObject.getActivationCode());
+		if(appUser == null) {
+			throw new SystemException(ErrorHolder.newInstance("ERAC03", messageSource.getMessage("error.user.activation.code", null, Locale.ENGLISH)));
+		}
+		userService.activate(appUser.getPkAppUser());
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value="/updateInitialWizard/{pkAppUser}/{initialWizardStep}")
@@ -134,9 +147,9 @@ public class UserController extends SuperController<AppUser>{
 	@Override
 	public AppUser preCreate(AppUser anObject) throws SystemException {
 		anObject.setSuperUser(Boolean.FALSE);
-		anObject.setUserType(1);
 		anObject.setLoginFailed(0);
 		anObject.setLock(Boolean.TRUE);
+		anObject.setParty(Party.getInstance());
 		return validate(anObject);
 	}
 	
@@ -153,9 +166,11 @@ public class UserController extends SuperController<AppUser>{
 		List<ErrorHolder> errors = new ArrayList<>();
 		
 		if (StringFunction.isEmpty(anObject.getEmail())) {
-			errors.add(ErrorHolder.newInstance(AppUser.PASSWORD, messageSource.getMessage("error.user.password.mandatory", null, Locale.ENGLISH)));
-		} else if (userService.isEmailAlreadyInUsed(anObject.getPkAppUser(), anObject.getEmail())){
-			
+			errors.add(ErrorHolder.newInstance("ERUC001", messageSource.getMessage("error.mandatory", new String[]{"email"}, Locale.ENGLISH)));
+		} else if(!EmailFunction.isValid(anObject.getEmail())) {
+			errors.add(ErrorHolder.newInstance("ERUC002", messageSource.getMessage("error.invalid", new String[]{anObject.getEmail(), "email"}, Locale.ENGLISH)));
+		} if (userService.isEmailAlreadyInUsed(anObject.getPkAppUser(), anObject.getEmail())){
+			errors.add(ErrorHolder.newInstance("ERUC003", messageSource.getMessage("error.user.email.already.inused", new String[]{anObject.getEmail()}, Locale.ENGLISH)));
 		}
 		
 		if (StringFunction.isEmpty(anObject.getPassword())) {

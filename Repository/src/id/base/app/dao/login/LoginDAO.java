@@ -64,20 +64,11 @@ public class LoginDAO extends AbstractHibernateDAO<RuntimeUserLogin,Long> implem
 	}
 	
 	@Override
-	public RuntimeUserLogin findByAccessInfoId(String accessInfoId)
-			throws SystemException {
+	public RuntimeUserLogin findByEmail(String email) throws SystemException {
 		RuntimeUserLogin userLogin = (RuntimeUserLogin) getSession().createCriteria(RuntimeUserLogin.class).add(
-				Restrictions.eq(RuntimeUserLogin.ACCESS_INFO, accessInfoId))
+				Restrictions.eq(RuntimeUserLogin.EMAIL, email))
 				.uniqueResult();
 		return userLogin;
 	}
-	
-	@Override
-	public RuntimeUserLogin findByUserName(String userName)
-			throws SystemException {
-		RuntimeUserLogin userLogin = (RuntimeUserLogin) getSession().createCriteria(RuntimeUserLogin.class).add(
-				Restrictions.eq(RuntimeUserLogin.USER_NAME, userName))
-				.uniqueResult();
-		return userLogin;
-	}
+
 }

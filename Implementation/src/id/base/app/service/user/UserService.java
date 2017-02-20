@@ -2,6 +2,7 @@ package id.base.app.service.user;
 
 import id.base.app.SystemConstant;
 import id.base.app.SystemParameter;
+import id.base.app.dao.login.ILoginDAO;
 import id.base.app.dao.passwordhistory.IPasswordHistoryDAO;
 import id.base.app.dao.passwordhistory.PasswordHistoryDAO;
 import id.base.app.dao.role.IAppRoleDAO;
@@ -22,7 +23,7 @@ import id.base.app.util.dao.SearchOrder.Sort;
 import id.base.app.valueobject.AppRole;
 import id.base.app.valueobject.AppUser;
 import id.base.app.valueobject.PasswordHistory;
-import id.base.app.valueobject.party.PartyContact;
+import id.base.app.valueobject.RuntimeUserLogin;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,19 +31,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class UserMaintenanceService implements MaintenanceService<AppUser>, IUserService, IUserNotificationService{
+public class UserService implements MaintenanceService<AppUser>, IUserService, IUserNotificationService{
 
 	@Autowired
 	private IAppRoleDAO appRoleDAO;
@@ -64,7 +57,9 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	@Autowired
 	private IPasswordHistoryDAO historyDAO;
 	@Autowired
-	@Qualifier("SparkPostMailService")
+	private ILoginDAO loginDAO;
+	@Autowired
+	@Qualifier("SMTPMailService")
 	private EmailAPI mailService;
 	@Autowired
 	@Qualifier("ShortMessageService")
@@ -74,17 +69,12 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	@Autowired
 	private IUserDAO userDao;
 	
-	public UserMaintenanceService(){}
+	public UserService(){}
 	
-	protected static Logger LOGGER = LoggerFactory.getLogger(UserMaintenanceService.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 	
 	
-	public static final String RESULT 			= "Result";
-	public static final String VALID_CONTRACT 	= "validUser_";
-	public static final String INVALID_CONTRACT	= "invalidUser_";
-	public static final String SUMMARY			= "summary_";
-	
-	public UserMaintenanceService(IUserDAO userDao,IStringDigester digester, PasswordHistoryDAO historyDAO){
+	public UserService(IUserDAO userDao,IStringDigester digester, PasswordHistoryDAO historyDAO){
 		this.userDao=userDao;
 		this.digester=digester;
 		this.historyDAO=historyDAO;
@@ -130,8 +120,7 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 			appUser.setStatus(2);
 			appUser.setAppRoles(populateAppRoles(appUser));
 			appUser.setActivationCode(generateActivationCode(appUser.getPassword()));
-			appUser.setUserType(2);
-			appUser.setAppRoles(getRoles(SystemConstant.UserRole.TRANSACTION_MEMBER));
+			appUser.setAppRoles(getRoles(SystemConstant.UserRole.WEB_USER));
 		}
 		userDao.saveOrUpdate(appUser);
 		if (isShouldUpdatePwdHistory) {
@@ -147,44 +136,17 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	}
 	
 	private void sendActivation(AppUser appUser) throws SystemException {
-		if(appUser.getActivationMethod().equals(SystemConstant.ActivationMethod.EMAIL)) {
-			//send using email
-			if (StringFunction.isNotEmpty(appUser.getEmail())) {
-				try{
-					mailService.sendMail(new ArrayList<>(Arrays.asList(appUser.getEmail())), SystemParameter.EMAIL_SENDER, "BASE - PENDAFTARAN USER", resolveContent(appUser), null);
-				}catch(Exception e){
-					throw new SystemException (ErrorHolder.newInstance("errorCode", "Fail to send Activation Email"));
-				}
-			}
-		} else {
-			//send using handphone
-			String phoneNumber = extractPhoneNumber(appUser);
-			if (StringFunction.isNotEmpty(phoneNumber)) {
-				try{
-					shortMessageService.sendMessage(phoneNumber, resolveSMSContent(appUser.getParty().getName(), appUser.getActivationCode()));
-				}catch(Exception e){
-					throw new SystemException (ErrorHolder.newInstance("errorCode", "Fail to send Activation Short Message"));
-				}
+		if (StringFunction.isNotEmpty(appUser.getEmail())) {
+			try{
+				mailService.sendMail(new ArrayList<>(Arrays.asList(appUser.getEmail())), SystemParameter.EMAIL_SENDER, "User Registration", resolveContent(appUser), null);
+			}catch(Exception e){
+				throw new SystemException (ErrorHolder.newInstance("errorCode", "Fail to send Activation Email"));
 			}
 		}
-	}
-	
-	private String extractPhoneNumber(AppUser appUser) {
-		if(appUser.getParty() != null && appUser.getParty().getPartyContacts() != null && appUser.getParty().getPartyContacts().size() > 0) {
-			for(PartyContact contact : appUser.getParty().getPartyContacts()) {
-				return contact.getContact();
-			}
-		}
-		return "";
 	}
 	
 	private String resolveContent(AppUser appUser) {
-		String activationLink = SystemConstant.ADMIN_URL + "/do/registration/activation/" + appUser.getActivationCode();
-		return activationLink;
-	}
-	
-	private String resolveSMSContent(String name, String activationCode) {
-		return "Hallo, " + name + ". Selamat bergabung di BASE.ID. Kode aktivasi pendaftaran anda " + activationCode + ".";
+		return "your activation code is : " + appUser.getActivationCode();
 	}
 	
 	private String generateActivationCode(String input) {
@@ -212,16 +174,14 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	}
 	
 	public static void main(String[] args) {
-		UserMaintenanceService ser = new UserMaintenanceService();
+		UserService ser = new UserService();
 		System.out.println(ser.generateActivationCode("tes"));
 	}
 	
 	private List<AppRole> populateAppRoles(AppUser appUser) {
-		if(appUser.getRoleFlag() != null && appUser.getRoleFlag().equals(AppUser.USER_FRONTEND)){
-			AppRole role = appRoleDAO.findAppRoleByCode(SystemConstant.UserRole.TRANSACTION_MEMBER);
-			if(role != null){
-				return new ArrayList<AppRole>(Arrays.asList(role));
-			}
+		AppRole role = appRoleDAO.findAppRoleByCode(SystemConstant.UserRole.WEB_USER);
+		if(role != null){
+			return new ArrayList<AppRole>(Arrays.asList(role));
 		}
 		return null;
 	}
@@ -248,14 +208,24 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 		return appUser;
 	}
 	
-	public AppUser findByEmailAndPassword(String email, String unencryptedPassword) throws SystemException {
+	@Override
+	public RuntimeUserLogin buildRuntimeUserLogin(String email, String unencryptedPassword, String remoteAddress) throws SystemException {
 		AppUser appUser = userDao.findAppUserByEmail(email);
 		if(appUser == null) {
-			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("ERAU01", messageSource.getMessage("error.user.not.found", null, Locale.ENGLISH)));
 		}else if(!matchPassword(unencryptedPassword, appUser.getPassword())){
-			throw new SystemException(ErrorHolder.newInstance("errorCode", "error.user.not.found"));
+			throw new SystemException(ErrorHolder.newInstance("ERAU02", messageSource.getMessage("error.user.invalid.password", null, Locale.ENGLISH)));
 		}
-		return appUser;
+		RuntimeUserLogin session = loginDAO.findByEmail(appUser.getEmail());
+		if(session != null){
+			session.setRemoteAddress(remoteAddress);
+			session.setLoginTime(Calendar.getInstance().getTime());
+			session.setUserId(appUser.getPkAppUser());
+		}else{
+			session = RuntimeUserLogin.newInstance(appUser.getPkAppUser(), appUser.getEmail(), remoteAddress);
+		}
+		loginDAO.saveOrUpdate(session);
+		return session;
 	}
 	
 	public AppUser findByEmailAndActivationCode(String email, String activationCode) throws SystemException {
@@ -291,6 +261,7 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 		return appUser;
 	}
 	
+	@Override
 	public AppUser findByEmailTypeAndPassword(String email, int type, String unencryptedPassword) throws SystemException {
 		AppUser appUser = userDao.findAppUserByEmailAndType(email, type); 
 		if(appUser == null) {
@@ -364,125 +335,8 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	}
 
 	@Override
-	public List<AppUser> findSupervisor(Long partnerPkParty,
-			Long pkLocationStructure, Long pkTitleStructure, Long pkOrgUnit)
-			throws SystemException {
+	public List<AppUser> findSupervisor(Long partnerPkParty, Long pkLocationStructure, Long pkTitleStructure, Long pkOrgUnit) throws SystemException {
 		return null;
-	}
-//
-	@Override
-	public Map<String, Object> validateFile(String fileName, Long pkPartner) throws SystemException {
-		Map<String, Object> resultMap = new HashMap<>();
-		
-		try{
-			String localFile = fileName;
-			String userDirectory = getUserDirectory();
-			Map<Integer, String> fieldMap = getFieldMap();
-			
-			/*if(null != fieldMap && fieldMap.size() > 0){
-				Partner partner = partnerDAO.findById(pkPartner);
-				Map<Integer, List<LinkedList<Object>>> uploadMap = startValidateUserFile(fieldMap, userDirectory + localFile, POIUtil.getFileExtension(fileName), partner.getParty().getPkParty());
-				resultMap = generateResultFile(uploadMap, partnerDAO.findById(pkPartner).getParty().getName(), userDirectory);
-			}*/
-		}catch(Exception e){
-			e.printStackTrace();
-			resultMap.put(SystemConstant.ERROR_LIST, new ArrayList<ErrorHolder>(Arrays.asList(ErrorHolder.newInstance("errorCode", e.getMessage()))));
-		}
-		return resultMap;
-	}
-	
-	private Map<Integer, String> getFieldMap(){
-		List<String> fieldList = new ArrayList<String>();
-		fieldList.add("NIK");
-		fieldList.add("Officer Name");
-		fieldList.add("Officer Code");
-		fieldList.add("Structure Date");
-		fieldList.add("Join Date");
-		fieldList.add("Level");
-		fieldList.add("Direct Supervisor");
-		fieldList.add("Branch Code");
-		fieldList.add("Branch Name");
-		fieldList.add("Area Code");
-		fieldList.add("Area Name");
-		fieldList.add("Region Code");
-		fieldList.add("Region Name");
-		fieldList.add("ID Number");
-		fieldList.add("Address 1");
-		fieldList.add("Address 2");
-		fieldList.add("Address 3");
-		fieldList.add("Account No");
-		fieldList.add("NPWP");
-		fieldList.add("AAJI");
-		fieldList.add("AAJI Exp Date");
-		fieldList.add("Email Address");
-		fieldList.add("Mobile Phone");
-		fieldList.add("Referral");
-		fieldList.add("User ID");
-		
-		Map<Integer, String> fieldMap = new TreeMap<>();
-		for(int i = 0; i<fieldList.size(); i++){
-			fieldMap.put(i+1, fieldList.get(i));
-		}
-		return fieldMap;
-	}
-	
-	private List<String> getFieldList(){
-		List<String> fieldList = new ArrayList<String>();
-		fieldList.add("NIK");
-		fieldList.add("Officer Name");
-		fieldList.add("Officer Code");
-		fieldList.add("Structure Date");
-		fieldList.add("Join Date");
-		fieldList.add("Level");
-		fieldList.add("Direct Supervisor");
-		fieldList.add("Branch Code");
-		fieldList.add("Branch Name");
-		fieldList.add("Area Code");
-		fieldList.add("Area Name");
-		fieldList.add("Region Code");
-		fieldList.add("Region Name");
-		fieldList.add("ID Number");
-		fieldList.add("Address 1");
-		fieldList.add("Address 2");
-		fieldList.add("Address 3");
-		fieldList.add("Account No");
-		fieldList.add("NPWP");
-		fieldList.add("AAJI");
-		fieldList.add("AAJI Exp Date");
-		fieldList.add("Email Address");
-		fieldList.add("Mobile Phone");
-		fieldList.add("Referral");
-		fieldList.add("User ID");
-		return fieldList;
-	}
-	
-	private int getDataType(int i){
-		int numeric = 1;
-		int string 	= 2;
-		int date 	= 3;
-		int llong	= 5;
-		int email	= 6;
-		if(i == 4 || i == 5 || i == 21){
-			return date;
-		}else if(i == 22){
-			return email;
-		}else if(i == 23){
-			return numeric;
-		}else{
-			return string;
-		}
-	}
-	
-	private void setUser(AppUser user, Object obj, int temp, String level, Map<String,Long> employmentMapping, String field, Map<String,Date> employmentDates, Long partnerPkParty){
-		
-	}
-	
-	private String getUserDirectory(){
-		return SystemConstant.LOCAL_TEMP_DIRECTORY_USER;
-	}
-	
-	private void validateData(String obj, int temp, String level, Map<String, Long> pks, List<ErrorHolder> errorList, String field, boolean columnNotFound, Long partnerPkParty){
-		
 	}
 	
 	public static boolean isDateValid(String value){
@@ -503,91 +357,6 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 		}
 	}
 	
-	private Map<Integer, List<LinkedList<Object>>> startValidateUserFile(Map<Integer, String> fieldMap, String pathFile, String fileType, Long partnerPkParty) throws Exception {
-		return null;
-	}
-	
-	private Boolean validateFieldSize(Cell cell, String field) throws Exception{
-		String cellValue = null;
-		try{
-			if(field.equals("NIK") || field.equals("Officer Code") || field.equals("Direct Supervisor") || field.equals("Area Code")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 10 ? true : false;
-			}else if(field.equals("Officer Name") || field.equals("Address 1") || field.equals("Address 2") || field.equals("Address 3") || field.equals("AAJI")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 60 ? true : false;
-			}else if(field.equals("Structure Date") || field.equals("Join Date") || field.equals("AAJI Exp Date")){
-				cellValue = cell.toString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 10 ? true : false;
-			}else if(field.equals("Branch Name") || field.equals("Area Name") || field.equals("Region Name") || field.equals("Email Address")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 100 ? true : false;
-			}else if(field.equals("Region Code") || field.equals("Level")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 2 ? true : false;
-			}else if(field.equals("Branch Code")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 5 ? true : false;
-			}else if(field.equals("ID Number") || field.equals("NPWP")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 30 ? true : false;
-			}else if(field.equals("Account No")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 20 ? true : false;
-			}else if(field.equals("Mobile Phone")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 15 ? true : false;
-			}else if(field.equals("Referral")){
-				cellValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-				return cellValue.length() <= 1 ? true : false;
-			}/*else if(field.equals("Level")){
-				Long numericValue = ((Double) POIUtil.convertCellToObject(1, cell)).longValue();
-				cellValue = "" + numericValue;
-				return cellValue.length() <= 2 ? true : false;
-			}*/else{
-				return true;
-			}
-			/*else if(dataType == ILookupConstant.FieldDataType.NUMERIC){
-			Long numericValue = ((Double) POIUtil.convertCellToObject(dataType, cell)).longValue();
-			cellValue = "" + numericValue;
-			return cellValue.length() <= fieldSize ? true : false;*/
-		}catch(Exception e){
-			throw e;
-		}
-	}
-	
-	private LinkedList<Object> getColumnHeader(Sheet sheet) throws Exception {
-		LinkedList<Object> columnHeaderList = new LinkedList<>();
-		
-		Row row = sheet.getRow(0);
-		if(null != row){
-			Iterator<Cell> cellIterator = row.cellIterator();
-			while(cellIterator.hasNext()){
-				Cell cell = cellIterator.next();
-				String headerValue = "";
-				if(cell.getCellType()==Cell.CELL_TYPE_STRING){
-					headerValue = cell.getRichStringCellValue().getString().trim().replaceAll("\\s+", " ");
-					columnHeaderList.add(headerValue);
-				}else if(cell.getCellType()==Cell.CELL_TYPE_NUMERIC){
-					headerValue = "" + cell.getNumericCellValue();
-					columnHeaderList.add(headerValue);
-				}
-			}
-		}else{
-			throw new Exception(messageSource.getMessage("upload.user.template", new String[]{}, Locale.ENGLISH));
-		}
-		return columnHeaderList;
-	}
-	
-	@Override
-	public Map<String, Object> processFile(String fileName, Long pkPartner) throws SystemException {
-		return null;
-	}
-	
-	private Map<String, Object> fetchToUser(List<String> fieldList, String pathFile, String fileType, Long partnerPkParty) throws Exception {
-		return null;
-	}
-
 	@Override
 	public AppUser activateUserByActivationCode(String activationCode) throws SystemException {
 		AppUser user = userDao.getAppUserByActivationCode(activationCode);
@@ -634,5 +403,5 @@ public class UserMaintenanceService implements MaintenanceService<AppUser>, IUse
 	public Boolean validateActivationCode(String userName, String activationCode) throws SystemException {
 		return userDao.validateActivationCode(userName, activationCode);
 	}
-
+	
 }
